@@ -1,4 +1,4 @@
-package users;
+package pl.webser.users;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;

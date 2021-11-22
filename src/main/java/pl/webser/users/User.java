@@ -1,4 +1,4 @@
-package users;
+package pl.webser.users;
 
 import lombok.*;
 import org.springframework.lang.NonNull;

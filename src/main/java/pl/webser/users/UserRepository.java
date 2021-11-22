@@ -1,4 +1,4 @@
-package users;
+package pl.webser.users;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
