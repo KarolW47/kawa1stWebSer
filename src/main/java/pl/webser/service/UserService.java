@@ -6,10 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.webser.model.User;
 import pl.webser.repository.UserRepository;
 
@@ -18,19 +15,19 @@ import java.util.Optional;
 
 @RestController
 @Slf4j
+@RequestMapping ("/user")
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    //method for tests
+    //method to check list of users, just for tests
     @GetMapping(path = "/users")
-    public ResponseEntity getUsers () throws JsonProcessingException {
+    @CrossOrigin(origins = "http://localhost:4200")
+    public ResponseEntity getUsers () {
         List<User> usersFromDb = userRepository.findAll();
-        return ResponseEntity.ok(objectMapper.writeValueAsString(usersFromDb));
+        return ResponseEntity.ok(usersFromDb);
+//        return ResponseEntity.ok(objectMapper.writeValueAsString(usersFromDb));
     }
 
     //register new users method
