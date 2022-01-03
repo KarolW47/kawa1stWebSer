@@ -22,6 +22,11 @@ public class User {
     private String username;
 
     @NonNull
+    @Column(unique = true)
+    @NotEmpty(message = "Email address cannot be empty or null")
+    private String emailAddress;
+
+    @NonNull
     @NotEmpty(message = "Password cannot be empty or null")
     private String password;
 }

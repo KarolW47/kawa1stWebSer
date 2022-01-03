@@ -1,7 +1,5 @@
 package pl.webser.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,7 +25,6 @@ public class UserService {
     public ResponseEntity getUsers () {
         List<User> usersFromDb = userRepository.findAll();
         return ResponseEntity.ok(usersFromDb);
-//        return ResponseEntity.ok(objectMapper.writeValueAsString(usersFromDb));
     }
 
     //register new users method
