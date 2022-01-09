@@ -54,7 +54,7 @@ public class UserService {
 
         //validate if password fits in required length
         String providedPassword = user.getPassword();
-        if(providedPassword.length() < 6 && providedPassword.length() > 35) {
+        if(providedPassword.length() < 6 || providedPassword.length() > 35) {
             return responseAfterUnsuccessfulValidation("Password does not fit into required pattern.");
         }
 
