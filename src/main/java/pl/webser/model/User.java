@@ -30,4 +30,7 @@ public class User {
     @NonNull
     @NotEmpty(message = "Password cannot be empty or null")
     private String password;
+
+    @NonNull
+    private Boolean isAuthorized = false;
 }

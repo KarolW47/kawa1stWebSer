@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 @RestController
 @Slf4j
 @RequestMapping("/user")
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserService {
 
     @Autowired
@@ -22,7 +23,6 @@ public class UserService {
 
     //method to check list of users, just for tests
     @GetMapping(path = "/users")
-    @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity getUsers() {
         List<User> usersFromDb = userRepository.findAll();
         return ResponseEntity.ok(usersFromDb);
@@ -40,16 +40,16 @@ public class UserService {
                 || providedUsername.length() < 6
                 || providedUsername.length() > 24
                 || !(Pattern.matches(usernameRegex, providedUsername))) {
-            return responseAfterUnsuccessfulValidation("Username does not fit into required pattern.");
+            return responseAfterUnsuccessfulValidation("Username does not fit into required pattern or already exists.");
         }
 
         //validate if email address already exists && fits in expected regex
         Optional<User> userFromDbByEmail = userRepository.findByEmailAddress(user.getEmailAddress());
         String providedEmailAddress = user.getEmailAddress();
-        String emailAddressRegex = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}$";
+        String emailAddressRegex = "^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}$";
 
         if (userFromDbByEmail.isPresent() || !(Pattern.matches(emailAddressRegex, providedEmailAddress))) {
-            return responseAfterUnsuccessfulValidation("Email address does not fit into required pattern..");
+            return responseAfterUnsuccessfulValidation("Email address does not fit into required pattern or already exists.");
         }
 
         //validate if password fits in required length
@@ -60,7 +60,7 @@ public class UserService {
 
         User userToSave = userRepository.save(user);
         log.info("Successfully added user: " + userToSave.getUsername() + " to DB.");
-        return ResponseEntity.ok("Successfully registered user: " + userToSave.getUsername());
+        return ResponseEntity.ok(user);
     }
 
     public ResponseEntity responseAfterUnsuccessfulValidation(String responseMessage) {
