@@ -32,11 +32,11 @@ public class UserService {
     @PostMapping(path = "/register")
     public ResponseEntity addUser(@RequestBody User user) {
         //validate if username already exists && fits in required length && fits in expected regex;
-        Optional<User> userFromDbByUsername = userRepository.findByUsername(user.getUsername());
+        Boolean isUserExists = userRepository.existsByUsername(user.getUsername());
         String providedUsername = user.getUsername();
         String usernameRegex = "^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$";
 
-        if (userFromDbByUsername.isPresent()
+        if (isUserExists
                 || providedUsername.length() < 6
                 || providedUsername.length() > 24
                 || !(Pattern.matches(usernameRegex, providedUsername))) {
@@ -44,11 +44,12 @@ public class UserService {
         }
 
         //validate if email address already exists && fits in expected regex
-        Optional<User> userFromDbByEmail = userRepository.findByEmailAddress(user.getEmailAddress());
+        Boolean isEmailAddressExists = userRepository.existsByEmailAddress(user.getEmailAddress());
         String providedEmailAddress = user.getEmailAddress();
         String emailAddressRegex = "^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}$";
 
-        if (userFromDbByEmail.isPresent() || !(Pattern.matches(emailAddressRegex, providedEmailAddress))) {
+        if (isEmailAddressExists
+                || !(Pattern.matches(emailAddressRegex, providedEmailAddress))) {
             return responseAfterUnsuccessfulValidation("Email address does not fit into required pattern or already exists.");
         }
 

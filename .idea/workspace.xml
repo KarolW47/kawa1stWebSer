@@ -6,10 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="79c41d99-26f5-4f4c-ae41-ef394976fa89" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/model/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/service/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/model/User.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pl/webser/model/User.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/service/UserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pl/webser/service/UserService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
