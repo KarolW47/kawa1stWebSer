@@ -5,6 +5,8 @@ import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Entity
 @Data
@@ -14,7 +16,7 @@ import javax.validation.constraints.NotEmpty;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NonNull
@@ -31,6 +33,6 @@ public class User {
     @NotEmpty(message = "Password cannot be empty or null")
     private String password;
 
-    @NonNull
-    private Boolean isAuthorized = false;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Collection<Role> roles = new ArrayList<>();
 }

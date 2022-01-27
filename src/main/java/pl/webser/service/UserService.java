@@ -1,71 +1,79 @@
 package pl.webser.service;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Service;
+import pl.webser.model.Role;
 import pl.webser.model.User;
+import pl.webser.repository.RoleRepository;
 import pl.webser.repository.UserRepository;
 
+import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
-@RestController
+@Service
+@AllArgsConstructor
+@Transactional
 @Slf4j
-@RequestMapping("/user")
-@CrossOrigin(origins = "http://localhost:4200")
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
-    //method to check list of users, just for tests
-    @GetMapping(path = "/users")
-    public ResponseEntity getUsers() {
-        List<User> usersFromDb = userRepository.findAll();
-        return ResponseEntity.ok(usersFromDb);
+    public List<User> getUsers() {
+        log.info("Fetching all users from database.");
+        return userRepository.findAll();
     }
 
-    //register new users method
-    @PostMapping(path = "/register")
-    public ResponseEntity addUser(@RequestBody User user) {
-        //validate if username already exists && fits in required length && fits in expected regex;
-        Boolean isUserExists = userRepository.existsByUsername(user.getUsername());
-        String providedUsername = user.getUsername();
+    public User saveUser(User user) {
+        log.info("Saving new user ({}) to database.", user.getUsername());
+        return userRepository.save(user);
+    }
+
+    public Boolean isUsernameValid(String username) {
         String usernameRegex = "^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$";
+        log.info("Validating username with required length and pattern");
+        return username.length() < 6
+                || username.length() > 24
+                || Pattern.matches(usernameRegex, username);
+    }
 
-        if (isUserExists
-                || providedUsername.length() < 6
-                || providedUsername.length() > 24
-                || !(Pattern.matches(usernameRegex, providedUsername))) {
-            return responseAfterUnsuccessfulValidation("Username does not fit into required pattern or already exists.");
-        }
+    public Boolean isUsernameTaken(String username) {
+        log.info("Validating if username is already taken.");
+        return userRepository.existsByUsername(username);
+    }
 
-        //validate if email address already exists && fits in expected regex
-        Boolean isEmailAddressExists = userRepository.existsByEmailAddress(user.getEmailAddress());
-        String providedEmailAddress = user.getEmailAddress();
+    public Boolean isEmailAddressValid(String emailAddress) {
         String emailAddressRegex = "^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}$";
-
-        if (isEmailAddressExists
-                || !(Pattern.matches(emailAddressRegex, providedEmailAddress))) {
-            return responseAfterUnsuccessfulValidation("Email address does not fit into required pattern or already exists.");
-        }
-
-        //validate if password fits in required length
-        String providedPassword = user.getPassword();
-        if(providedPassword.length() < 6 || providedPassword.length() > 35) {
-            return responseAfterUnsuccessfulValidation("Password does not fit into required pattern.");
-        }
-
-        User userToSave = userRepository.save(user);
-        log.info("Successfully added user: " + userToSave.getUsername() + " to DB.");
-        return ResponseEntity.ok(user);
+        log.info("Validating emailAddress with required pattern");
+        return Pattern.matches(emailAddressRegex, emailAddress);
     }
 
-    public ResponseEntity responseAfterUnsuccessfulValidation(String responseMessage) {
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(responseMessage);
+    public Boolean isEmailAddressTaken(String emailAddress) {
+        log.info("Validating if emailAddress is already taken.");
+        return userRepository.existsByEmailAddress(emailAddress);
     }
 
+    public Boolean isPasswordValid(String password) {
+        log.info("Validating password with required length.");
+        return password.length() < 6 || password.length() > 35;
+    }
+
+    public Role saveRole(Role role) {
+        log.info("Saving new role ({}) to database.", role.getName());
+        return roleRepository.save(role);
+    }
+
+    public Boolean isRoleAlreadyExists(String name) {
+        log.info("Validating if role ({}) already exists  to database.", name);
+        return roleRepository.existsByName(name);
+    }
+
+    public void addRoleToUser(String username, String roleName) {
+        User user = userRepository.findByUsername(username);
+        Role role = roleRepository.findByName(roleName);
+        log.info("Saving role ({}) to user ({}) into database.", role.getName(), user.getUsername());
+        user.getRoles().add(role);
+    }
 }
