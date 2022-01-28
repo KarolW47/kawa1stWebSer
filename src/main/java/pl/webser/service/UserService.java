@@ -2,6 +2,11 @@ package pl.webser.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.parameters.P;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import pl.webser.model.Role;
 import pl.webser.model.User;
@@ -9,6 +14,8 @@ import pl.webser.repository.RoleRepository;
 import pl.webser.repository.UserRepository;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -16,10 +23,24 @@ import java.util.regex.Pattern;
 @AllArgsConstructor
 @Transactional
 @Slf4j
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+       User user = userRepository.findByUsername(username);
+       if(user == null){
+           throw new UsernameNotFoundException("User not found in database!");
+       } else {
+           log.info("User found in database.");
+           Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+           user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
+           return new org.springframework.security.core.userdetails.User(
+                   user.getUsername(), user.getPassword(), authorities);
+       }
+    }
 
     public List<User> getUsers() {
         log.info("Fetching all users from database.");
@@ -76,4 +97,6 @@ public class UserService {
         log.info("Saving role ({}) to user ({}) into database.", role.getName(), user.getUsername());
         user.getRoles().add(role);
     }
+
+
 }

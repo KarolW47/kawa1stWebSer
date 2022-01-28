@@ -1,4 +1,4 @@
-package pl.webser.controler;
+package pl.webser.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @PostMapping(path = "/createRole")
-    public ResponseEntity<?> addRole(@RequestBody Role role) {
+    public ResponseEntity<?> createRole(@RequestBody Role role) {
         if (userService.isRoleAlreadyExists(role.getName())) {
             return responseAfterUnsuccessfulValidation("Role already exists.");
         } else {
