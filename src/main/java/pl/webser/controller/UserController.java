@@ -17,7 +17,8 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 @RequestMapping("/user")
-@CrossOrigin(origins = "http://localhost:4200")
+//no need for this annotation since got spring security configure disabled csrf
+//@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
     private final UserService userService;

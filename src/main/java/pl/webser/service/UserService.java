@@ -7,6 +7,7 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.webser.model.Role;
 import pl.webser.model.User;
@@ -27,6 +28,7 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -34,9 +36,11 @@ public class UserService implements UserDetailsService {
        if(user == null){
            throw new UsernameNotFoundException("User not found in database!");
        } else {
-           log.info("User found in database.");
+           log.info("User found in database: {}", username);
            Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-           user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
+           user.getRoles().forEach(role -> {
+               authorities.add(new SimpleGrantedAuthority(role.getName()));
+           });
            return new org.springframework.security.core.userdetails.User(
                    user.getUsername(), user.getPassword(), authorities);
        }
@@ -49,6 +53,7 @@ public class UserService implements UserDetailsService {
 
     public User saveUser(User user) {
         log.info("Saving new user ({}) to database.", user.getUsername());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
