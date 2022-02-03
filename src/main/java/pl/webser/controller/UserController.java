@@ -1,17 +1,28 @@
 package pl.webser.controller;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import pl.webser.filter.FilterUtil;
 import pl.webser.model.Role;
 import pl.webser.model.User;
 import pl.webser.service.UserService;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static pl.webser.filter.FilterUtil.algorithmWithSecret;
+import static pl.webser.filter.FilterUtil.expirationTime;
 
 @RestController
 @AllArgsConstructor
@@ -60,6 +71,33 @@ public class UserController {
             log.info("Successfully added user: " + user.getUsername() + " to DB.");
             URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/register").toUriString());
             return ResponseEntity.created(uri).body(userService.saveUser(user));
+        }
+    }
+
+    @GetMapping(path = "/refreshToken")
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String authorizationToken = request.getHeader(AUTHORIZATION);
+        if (authorizationToken != null && authorizationToken.startsWith("Bearer ")){
+            try {
+                String refreshToken = authorizationToken.substring("Bearer ".length());
+                DecodedJWT decodedJWT = FilterUtil.decodeJWT(refreshToken);
+                String username = decodedJWT.getSubject();
+                User user = userService.getUser(username);
+                String accessToken = JWT.create()
+                        .withSubject(user.getUsername())
+                        .withExpiresAt(expirationTime())
+                        .withIssuer(request.getRequestURL().toString())
+                        .withClaim("roles", user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
+                        .sign(algorithmWithSecret);
+                response.setHeader("accessToken", accessToken);
+                response.setHeader("refreshToken", refreshToken);
+            } catch (Exception exception){
+                response.setHeader("Error", exception.getMessage());
+                response.setStatus(HttpStatus.FORBIDDEN.value());
+                response.sendError(HttpStatus.FORBIDDEN.value());
+            }
+        } else {
+            throw new RuntimeException("Refresh token is missing");
         }
     }
 

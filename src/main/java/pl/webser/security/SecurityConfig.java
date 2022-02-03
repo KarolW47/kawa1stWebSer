@@ -12,7 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import pl.webser.filter.CustomAuthenticationFilter;
+import pl.webser.filter.CustomAuthorizationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -28,15 +30,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
+        customAuthenticationFilter.setFilterProcessesUrl("/user/login");
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         //----- order of these matchers matters -----
-        http.authorizeRequests().antMatchers("user/register/**", "user/login/**", "user/users/**").permitAll();
+        http.authorizeRequests().antMatchers("user/register/**", "user/login/**", "user/refreshToken").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.GET, "user/users/**").hasAuthority("ROLE_USER");
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/createRole").hasAuthority("ROLE_ADMIN");
         //-------------------------------------------
         http.authorizeRequests().anyRequest().authenticated();
-        http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
+        http.addFilter(customAuthenticationFilter);
+        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean
