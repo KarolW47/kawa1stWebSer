@@ -3,21 +3,19 @@ package pl.webser.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import pl.webser.enumeration.RoleEnum;
 import pl.webser.model.Role;
 import pl.webser.model.User;
 import pl.webser.repository.RoleRepository;
 import pl.webser.repository.UserRepository;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @Service
@@ -31,22 +29,19 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-       User user = userRepository.findByUsername(username);
-       if(user == null){
-           throw new UsernameNotFoundException("User not found in database!");
-       } else {
-           log.info("User found in database: {}", username);
-           Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-           user.getRoles().forEach(role -> {
-               authorities.add(new SimpleGrantedAuthority(role.getName()));
-           });
-           return new org.springframework.security.core.userdetails.User(
-                   user.getUsername(), user.getPassword(), authorities);
-       }
+    public UserDetails loadUserByUsername(String username) {
+        User userFromDb = userRepository.findByUsername(username);
+        log.info("User found in database: {}", username);
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        userFromDb.getRoles().forEach(role -> {
+            authorities.add(new SimpleGrantedAuthority(role.getRoleName().toString()));
+        });
+        return new org.springframework.security.core.userdetails.User(
+                userFromDb.getUsername(), userFromDb.getPassword(), authorities);
+
     }
 
-    public User getUser(String username){
+    public User getUser(String username) {
         return userRepository.findByUsername(username);
     }
 
@@ -57,16 +52,20 @@ public class UserService implements UserDetailsService {
 
     public User saveUser(User user) {
         log.info("Saving new user ({}) to database.", user.getUsername());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(encodePassword(user.getPassword()));
+        Set<Role> roles = new HashSet<>();
+        Role role = roleRepository.findByRoleName(RoleEnum.ROLE_USER);
+        roles.add(role);
+        user.setRoles(roles);
         return userRepository.save(user);
     }
 
     public Boolean isUsernameValid(String username) {
         String usernameRegex = "^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$";
         log.info("Validating username with required length and pattern");
-        return username.length() < 6
-                || username.length() > 24
-                || Pattern.matches(usernameRegex, username);
+        return username.length() >= 6
+                && username.length() <= 24
+                && Pattern.matches(usernameRegex, username);
     }
 
     public Boolean isUsernameTaken(String username) {
@@ -87,23 +86,18 @@ public class UserService implements UserDetailsService {
 
     public Boolean isPasswordValid(String password) {
         log.info("Validating password with required length.");
-        return password.length() < 6 || password.length() > 35;
+        return password.length() >= 6 && password.length() <= 35;
     }
 
-    public Role saveRole(Role role) {
-        log.info("Saving new role ({}) to database.", role.getName());
-        return roleRepository.save(role);
+    public String encodePassword(String password){
+        return passwordEncoder.encode(password);
     }
 
-    public Boolean isRoleAlreadyExists(String name) {
-        log.info("Validating if role ({}) already exists  to database.", name);
-        return roleRepository.existsByName(name);
-    }
 
-    public void addRoleToUser(String username, String roleName) {
+    public void addRoleToRegisteredUser(String username, RoleEnum roleName) {
         User user = userRepository.findByUsername(username);
-        Role role = roleRepository.findByName(roleName);
-        log.info("Saving role ({}) to user ({}) into database.", role.getName(), user.getUsername());
+        Role role = roleRepository.findByRoleName(roleName);
+        log.info("Saving role ({}) to user ({}) into database.", role.getRoleName(), user.getUsername());
         user.getRoles().add(role);
     }
 

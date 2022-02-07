@@ -28,8 +28,7 @@ import static pl.webser.filter.FilterUtil.expirationTime;
 @AllArgsConstructor
 @Slf4j
 @RequestMapping("/user")
-//no need for this annotation since got spring security configure disabled csrf
-//@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
     private final UserService userService;
@@ -39,45 +38,47 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getUsers());
     }
 
-    @PostMapping(path = "/createRole")
-    public ResponseEntity<?> createRole(@RequestBody Role role) {
-        if (userService.isRoleAlreadyExists(role.getName())) {
-            return responseAfterUnsuccessfulValidation("Role already exists.");
-        } else {
-            URI uri =
-                    URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/createRole").toUriString());
-            return ResponseEntity.created(uri).body(userService.saveRole(role));
-        }
-    }
-
     @PostMapping(path = "/register")
     public ResponseEntity<?> addUser(@RequestBody User user) {
         if (userService.isUsernameTaken(user.getUsername())) {
             return responseAfterUnsuccessfulValidation(
                     "Username already exists.");
-        } else if (userService.isUsernameValid(user.getUsername())) {
+        } else if (!userService.isUsernameValid(user.getUsername())) {
             return responseAfterUnsuccessfulValidation(
                     "Username does not fit into required pattern.");
         } else if (userService.isEmailAddressTaken(user.getEmailAddress())) {
             return responseAfterUnsuccessfulValidation(
                     "Account with this email address already exists.");
-        } else if (userService.isEmailAddressValid(user.getEmailAddress())) {
+        } else if (!userService.isEmailAddressValid(user.getEmailAddress())) {
             return responseAfterUnsuccessfulValidation(
                     "Email address does not fit into required pattern.");
-        } else if (userService.isPasswordValid(user.getPassword())) {
+        } else if (!userService.isPasswordValid(user.getPassword())) {
             return responseAfterUnsuccessfulValidation(
                     "Password does not fit into required pattern.");
         } else {
             log.info("Successfully added user: " + user.getUsername() + " to DB.");
-            URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/register").toUriString());
+            URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/register").toUriString());
             return ResponseEntity.created(uri).body(userService.saveUser(user));
+        }
+    }
+
+    @PostMapping(path = "/login")
+    public ResponseEntity<?> logInUser(@RequestBody User user) {
+        User userFromDB = userService.getUser(user.getUsername());
+        if (userFromDB == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Username not found.");
+        } else if (!userService.encodePassword(user.getPassword())
+                .equals(userFromDB.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect password.");
+        } else {
+            return ResponseEntity.ok(userService.loadUserByUsername(user.getUsername()));
         }
     }
 
     @GetMapping(path = "/refreshToken")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationToken = request.getHeader(AUTHORIZATION);
-        if (authorizationToken != null && authorizationToken.startsWith("Bearer ")){
+        if (authorizationToken != null && authorizationToken.startsWith("Bearer ")) {
             try {
                 String refreshToken = authorizationToken.substring("Bearer ".length());
                 DecodedJWT decodedJWT = FilterUtil.decodeJWT(refreshToken);
@@ -87,11 +88,12 @@ public class UserController {
                         .withSubject(user.getUsername())
                         .withExpiresAt(expirationTime())
                         .withIssuer(request.getRequestURL().toString())
-                        .withClaim("roles", user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
+                        .withClaim("roles",
+                                user.getRoles().stream().map(Role::getRoleName).collect(Collectors.toList()))
                         .sign(algorithmWithSecret);
                 response.setHeader("accessToken", accessToken);
                 response.setHeader("refreshToken", refreshToken);
-            } catch (Exception exception){
+            } catch (Exception exception) {
                 response.setHeader("Error", exception.getMessage());
                 response.setStatus(HttpStatus.FORBIDDEN.value());
                 response.sendError(HttpStatus.FORBIDDEN.value());

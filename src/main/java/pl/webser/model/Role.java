@@ -3,7 +3,7 @@ package pl.webser.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.NonNull;
+import pl.webser.enumeration.RoleEnum;
 
 import javax.persistence.*;
 
@@ -18,7 +18,6 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NonNull
-    @Column(unique = true)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private RoleEnum roleName;
 }

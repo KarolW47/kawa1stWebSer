@@ -18,7 +18,6 @@ import java.util.Collection;
 
 import static java.util.Arrays.stream;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static pl.webser.filter.FilterUtil.algorithmWithSecret;
 import static pl.webser.filter.FilterUtil.decodeJWT;
 
 @Slf4j
