@@ -6,5 +6,6 @@ import pl.webser.model.Role;
 
 
 public interface RoleRepository extends JpaRepository<Role, Long> {
-    Role findByRoleName(RoleEnum roleName);
+    Role findByRoleName(String roleName);
+    Boolean existsByRoleName(String roleName);
 }

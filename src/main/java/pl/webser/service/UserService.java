@@ -5,10 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import pl.webser.enumeration.RoleEnum;
 import pl.webser.model.Role;
 import pl.webser.model.User;
 import pl.webser.repository.RoleRepository;
@@ -30,12 +28,10 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        User userFromDb = userRepository.findByUsername(username);
+        User userFromDb = getUser(username);
         log.info("User found in database: {}", username);
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        userFromDb.getRoles().forEach(role -> {
-            authorities.add(new SimpleGrantedAuthority(role.getRoleName().toString()));
-        });
+        userFromDb.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
         return new org.springframework.security.core.userdetails.User(
                 userFromDb.getUsername(), userFromDb.getPassword(), authorities);
 
@@ -53,8 +49,8 @@ public class UserService implements UserDetailsService {
     public User saveUser(User user) {
         log.info("Saving new user ({}) to database.", user.getUsername());
         user.setPassword(encodePassword(user.getPassword()));
-        Set<Role> roles = new HashSet<>();
-        Role role = roleRepository.findByRoleName(RoleEnum.ROLE_USER);
+        ArrayList<Role> roles = new ArrayList<>();
+        Role role = roleRepository.findByRoleName("ROLE_USER");
         roles.add(role);
         user.setRoles(roles);
         return userRepository.save(user);
@@ -94,11 +90,19 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public void addRoleToRegisteredUser(String username, RoleEnum roleName) {
+    public void addRoleToRegisteredUser(String username, String roleName) {
         User user = userRepository.findByUsername(username);
         Role role = roleRepository.findByRoleName(roleName);
         log.info("Saving role ({}) to user ({}) into database.", role.getRoleName(), user.getUsername());
         user.getRoles().add(role);
+    }
+
+    public Boolean isRoleAlreadyExists(String roleName) {
+        return roleRepository.existsByRoleName(roleName);
+    }
+
+    public Role addRole(Role role) {
+        return roleRepository.save(role);
     }
 
 

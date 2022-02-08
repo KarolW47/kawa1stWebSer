@@ -64,14 +64,16 @@ public class UserController {
 
     @PostMapping(path = "/login")
     public ResponseEntity<?> logInUser(@RequestBody User user) {
+        if (userService.isUsernameTaken(user.getUsername())){
         User userFromDB = userService.getUser(user.getUsername());
-        if (userFromDB == null) {
+            if (!userService.encodePassword(user.getPassword())
+                    .equals(userFromDB.getPassword())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect password.");
+            } else {
+                return ResponseEntity.ok(userService.loadUserByUsername(user.getUsername()));
+            }
+        } else{
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Username not found.");
-        } else if (!userService.encodePassword(user.getPassword())
-                .equals(userFromDB.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect password.");
-        } else {
-            return ResponseEntity.ok(userService.loadUserByUsername(user.getUsername()));
         }
     }
 
