@@ -1,12 +1,13 @@
-package pl.webser.filter;
+package pl.webser.security.filter;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import pl.webser.security.JWTUtil;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -18,10 +19,13 @@ import java.util.Collection;
 
 import static java.util.Arrays.stream;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static pl.webser.filter.FilterUtil.decodeJWT;
 
 @Slf4j
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
+
+    @Autowired
+    private JWTUtil jwtUtil;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -34,9 +38,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 try {
                     String token = authorizationHeader.substring("Bearer ".length());
-                    DecodedJWT decodedJWT = decodeJWT(token);
-                    String username = decodedJWT.getSubject();
-                    String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
+                    String username = jwtUtil.getUserNameFromJwtToken(token);
+                    String[] roles = jwtUtil.jwtVerifier().verify(token).getClaim("roles").asArray(String.class);
                     Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
                     stream(roles).forEach(role -> authorities.add(new SimpleGrantedAuthority(role)));
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -47,6 +50,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     log.error("Error: {}", exception.getMessage());
                     response.setHeader("error", exception.getMessage());
                     response.sendError(HttpStatus.FORBIDDEN.value());
+
                 }
             } else {
                 filterChain.doFilter(request, response);

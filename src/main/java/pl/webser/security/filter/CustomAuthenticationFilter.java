@@ -1,32 +1,30 @@
-package pl.webser.filter;
+package pl.webser.security.filter;
 
-import com.auth0.jwt.JWT;
-import lombok.AllArgsConstructor;
+
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import pl.webser.security.JWTUtil;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
-import java.util.stream.Collectors;
 
-import static pl.webser.filter.FilterUtil.algorithmWithSecret;
-import static pl.webser.filter.FilterUtil.expirationTime;
 
 @Slf4j
-@AllArgsConstructor
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JWTUtil jwtUtil;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -43,8 +41,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request,
                                               HttpServletResponse response,
-                                              AuthenticationException failed) throws IOException, ServletException {
-        super.unsuccessfulAuthentication(request, response, failed);
+                                              AuthenticationException authenticationException) throws IOException,
+            ServletException {
+        log.error("Unauthorized error: {}", authenticationException.getMessage());
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: Unauthorized");
     }
 
     @Override
@@ -52,26 +52,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authentication) throws IOException, ServletException {
-        //"User" taken from springframework.security.core.userdetails.User which require username, password and authorities
-        User user = (User) authentication.getPrincipal();
-        String accessToken = JWT.create()
-                .withSubject(user.getUsername())
-                .withExpiresAt(expirationTime())
-                //it might be company name or whatever, at this moment im passing url
-                .withIssuer(request.getRequestURL().toString())
-                .withClaim("roles", user.getAuthorities()
-                        .stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.toList()))
-                .sign(algorithmWithSecret);
 
-        String refreshToken = JWT.create()
-                .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime))
-                .withIssuer(request.getRequestURL().toString())
-                .sign(algorithmWithSecret);
-
+        String accessToken = jwtUtil.generateJwtToken(authentication);
         response.setHeader("accessToken", accessToken);
-        response.setHeader("refreshToken", refreshToken);
     }
 }

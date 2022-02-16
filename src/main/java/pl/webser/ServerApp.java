@@ -19,20 +19,17 @@ public class ServerApp {
     }
 
     @Bean
-    PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     CommandLineRunner run(UserService userService) {
         return args -> {
-            userService.saveUser(new User(null,"admin", "admin", "admin", new ArrayList<>()));
+            userService.saveUser(new User(null,"admin1", "admin1", "admin1", new ArrayList<>()));
 
             userService.addRole(new Role(null,"ROLE_USER"));
             userService.addRole(new Role(null,"ROLE_MODERATOR"));
             userService.addRole(new Role(null, "ROLE_ADMIN"));
 
-            userService.addRoleToRegisteredUser("admin", "ROLE_ADMIN");
+            userService.addRoleToRegisteredUser("admin1", "ROLE_ADMIN");
+            userService.addRoleToRegisteredUser("admin1", "ROLE_MODERATOR");
+            userService.addRoleToRegisteredUser("admin1", "ROLE_USER");
         };
     }
 }

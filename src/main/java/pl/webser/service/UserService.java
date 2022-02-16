@@ -1,10 +1,11 @@
 package pl.webser.service;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.webser.model.Role;
@@ -17,27 +18,33 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 @Service
-@AllArgsConstructor
 @Transactional
 @Slf4j
 public class UserService implements UserDetailsService {
 
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private  UserRepository userRepository;
+
+    @Autowired
+    private  RoleRepository roleRepository;
+
+    @Autowired
+    private  PasswordEncoder passwordEncoder;
 
     @Override
-    public UserDetails loadUserByUsername(String username) {
-        User userFromDb = getUser(username);
-        log.info("User found in database: {}", username);
-        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        userFromDb.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
-        return new org.springframework.security.core.userdetails.User(
-                userFromDb.getUsername(), userFromDb.getPassword(), authorities);
-
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        if(isUsernameTaken(username)){
+            User userFromDb = getUserByUsername(username);
+            log.info("User found in database: {}", username);
+            Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+            userFromDb.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
+            return new org.springframework.security.core.userdetails.User(userFromDb.getUsername(),
+                    userFromDb.getPassword(),
+                    authorities);
+        } else throw new UsernameNotFoundException("User not found in DB.");
     }
 
-    public User getUser(String username) {
+    public User getUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
@@ -85,13 +92,19 @@ public class UserService implements UserDetailsService {
         return password.length() >= 6 && password.length() <= 35;
     }
 
+    public Boolean isPasswordEqual(String username, String password){
+        String passwordInDB = userRepository.findByUsername(username).getPassword();
+        String encodedPasswordToMatch = encodePassword(password);
+        return passwordInDB.equals(encodedPasswordToMatch);
+    }
+
     public String encodePassword(String password){
         return passwordEncoder.encode(password);
     }
 
 
     public void addRoleToRegisteredUser(String username, String roleName) {
-        User user = userRepository.findByUsername(username);
+        User user = getUserByUsername(username);
         Role role = roleRepository.findByRoleName(roleName);
         log.info("Saving role ({}) to user ({}) into database.", role.getRoleName(), user.getUsername());
         user.getRoles().add(role);

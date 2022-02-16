@@ -1,15 +1,16 @@
 package pl.webser.controller;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import lombok.AllArgsConstructor;
+
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import pl.webser.filter.FilterUtil;
-import pl.webser.model.Role;
+import pl.webser.security.JWTUtil;
 import pl.webser.model.User;
 import pl.webser.service.UserService;
 
@@ -18,20 +19,23 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static pl.webser.filter.FilterUtil.algorithmWithSecret;
-import static pl.webser.filter.FilterUtil.expirationTime;
 
 @RestController
-@AllArgsConstructor
 @Slf4j
 @RequestMapping("/user")
-@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
-    private final UserService userService;
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private JWTUtil jwtUtil;
+
+    @Autowired
+    AuthenticationManager authenticationManager;
+
 
     @GetMapping(path = "/users")
     public ResponseEntity<List<User>> getUsers() {
@@ -57,23 +61,9 @@ public class UserController {
                     "Password does not fit into required pattern.");
         } else {
             log.info("Successfully added user: " + user.getUsername() + " to DB.");
-            URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/register").toUriString());
+            URI uri =
+                    URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/register").toUriString());
             return ResponseEntity.created(uri).body(userService.saveUser(user));
-        }
-    }
-
-    @PostMapping(path = "/login")
-    public ResponseEntity<?> logInUser(@RequestBody User user) {
-        if (userService.isUsernameTaken(user.getUsername())){
-        User userFromDB = userService.getUser(user.getUsername());
-            if (!userService.encodePassword(user.getPassword())
-                    .equals(userFromDB.getPassword())) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect password.");
-            } else {
-                return ResponseEntity.ok(userService.loadUserByUsername(user.getUsername()));
-            }
-        } else{
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Username not found.");
         }
     }
 
@@ -83,18 +73,15 @@ public class UserController {
         if (authorizationToken != null && authorizationToken.startsWith("Bearer ")) {
             try {
                 String refreshToken = authorizationToken.substring("Bearer ".length());
-                DecodedJWT decodedJWT = FilterUtil.decodeJWT(refreshToken);
-                String username = decodedJWT.getSubject();
-                User user = userService.getUser(username);
-                String accessToken = JWT.create()
-                        .withSubject(user.getUsername())
-                        .withExpiresAt(expirationTime())
-                        .withIssuer(request.getRequestURL().toString())
-                        .withClaim("roles",
-                                user.getRoles().stream().map(Role::getRoleName).collect(Collectors.toList()))
-                        .sign(algorithmWithSecret);
+                String username = jwtUtil.getUserNameFromJwtToken(refreshToken);
+                User user = userService.getUserByUsername(username);
+
+                Authentication authentication = authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+//                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                String accessToken = jwtUtil.generateJwtToken(authentication);
                 response.setHeader("accessToken", accessToken);
-                response.setHeader("refreshToken", refreshToken);
             } catch (Exception exception) {
                 response.setHeader("Error", exception.getMessage());
                 response.setStatus(HttpStatus.FORBIDDEN.value());

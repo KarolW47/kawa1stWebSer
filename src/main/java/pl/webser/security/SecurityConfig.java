@@ -1,6 +1,6 @@
 package pl.webser.security;
 
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,44 +12,48 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import pl.webser.filter.CustomAuthenticationFilter;
-import pl.webser.filter.CustomAuthorizationFilter;
+import pl.webser.security.filter.CustomAuthenticationFilter;
+import pl.webser.security.filter.CustomAuthorizationFilter;
 
 @Configuration
 @EnableWebSecurity
-@AllArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final UserDetailsService userDetailsService;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final AuthEntryPointJwt unauthorizedHandler;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
-    }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
-        customAuthenticationFilter.setFilterProcessesUrl("/user/login");
-        http.csrf().disable();
-        http.exceptionHandling().authenticationEntryPoint(unauthorizedHandler);
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        //----- order of these matchers matters -----
-        http.authorizeRequests().antMatchers("/user/refreshToken/**", "/user/login/**", "/user/register/**").permitAll();
-        http.authorizeRequests().antMatchers(HttpMethod.GET, "/user/users/**").hasAuthority("ROLE_USER");
-//        http.authorizeRequests().antMatchers(HttpMethod.POST, "/user/lock").hasAuthority(RoleEnum.ROLE_ADMIN.toString());
-        //-------------------------------------------
-        http.authorizeRequests().anyRequest().authenticated();
-        http.addFilter(customAuthenticationFilter);
-        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
     @Bean
     @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception{
+    public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.cors();
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        //----- order of these matchers matters -----
+        http.authorizeRequests().antMatchers("/user/refreshToken/**", "/user/login/**", "/user/register/**").permitAll();
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/user/users/**").hasAuthority("ROLE_USER");
+//        http.authorizeRequests().antMatchers(HttpMethod.POST, "/user/lock").hasAuthority(RoleEnum.ROLE_ADMIN
+//        .toString());
+        //-------------------------------------------
+        http.authorizeRequests().anyRequest().authenticated();
+        http.addFilter(new CustomAuthenticationFilter());
+        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+    }
+
 
 }
