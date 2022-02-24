@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import pl.webser.security.filter.CustomAuthenticationFilter;
@@ -24,9 +23,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+    }
+
+    @Bean
+    public CustomAuthorizationFilter customAuthorizationFilter(){
+        return new CustomAuthorizationFilter();
     }
 
     @Bean
@@ -36,13 +43,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public CustomAuthenticationFilter customAuthenticationFilter() throws Exception {
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
+        customAuthenticationFilter.setFilterProcessesUrl("/user/login");
+        return customAuthenticationFilter;
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors();
+        http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         //----- order of these matchers matters -----
         http.authorizeRequests().antMatchers("/user/refreshToken/**", "/user/login/**", "/user/register/**").permitAll();
@@ -51,8 +60,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //        .toString());
         //-------------------------------------------
         http.authorizeRequests().anyRequest().authenticated();
-        http.addFilter(new CustomAuthenticationFilter());
-        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilter(customAuthenticationFilter());
+        http.addFilterBefore(customAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
 

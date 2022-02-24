@@ -3,7 +3,6 @@ package pl.webser.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
 import org.springframework.security.core.Authentication;
@@ -15,16 +14,15 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 @Component
-@Slf4j
 public class JWTUtil {
-    @Value("${jwt.expirationTime}")
+    @Value("${jwt.expiration.time}")
     private int jwtExpirationTime;
 
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    public Algorithm generateAlgorithmWithPassedSecret(String jwtSecret) {
-        return Algorithm.HMAC512(jwtSecret);
+    public Algorithm generateAlgorithmWithPassedSecret(String secret) {
+        return Algorithm.HMAC512(secret);
     }
 
     public String generateJwtToken(Authentication authentication) {

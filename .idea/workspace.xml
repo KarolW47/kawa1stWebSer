@@ -5,27 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="79c41d99-26f5-4f4c-ae41-ef394976fa89" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/pl/webser/security/WebConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/ServerApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/ServerApp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/controller/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/enumeration/RoleEnum.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/filter/CustomAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/security/filter/CustomAuthenticationFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/filter/CustomAuthorizationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/security/filter/CustomAuthorizationFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/filter/FilterUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/security/JWTUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/model/Role.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/model/Role.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/repository/RoleRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/repository/RoleRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/repository/UserRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/security/AuthEntryPointJwt.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/security/JWTUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/security/JWTUtil.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/security/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/security/WebConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/security/filter/CustomAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/security/filter/CustomAuthenticationFilter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/service/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/ServerApp.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pl/webser/ServerApp.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/controller/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pl/webser/controller/UserController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/filter/CustomAuthenticationFilter.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/filter/CustomAuthorizationFilter.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/filter/FilterUtil.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/security/AuthEntryPointJwt.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/repository/RoleRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pl/webser/repository/RoleRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/repository/UserRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pl/webser/repository/UserRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/security/JWTUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pl/webser/security/JWTUtil.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/security/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pl/webser/security/SecurityConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/security/filter/CustomAuthenticationFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pl/webser/security/filter/CustomAuthenticationFilter.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/service/UserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pl/webser/service/UserService.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
