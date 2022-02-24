@@ -19,12 +19,12 @@ import java.io.IOException;
 @Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    @Autowired
-    private JWTUtil jwtUtil;
 
+    private JWTUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public CustomAuthenticationFilter(JWTUtil jwtUtil, AuthenticationManager authenticationManager) {
+        this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
     }
 

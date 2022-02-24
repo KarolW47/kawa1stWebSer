@@ -1,5 +1,6 @@
 package pl.webser.security;
 
+import com.auth0.jwt.JWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,13 +27,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JWTUtil jwtUtil;
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 
     @Bean
-    public CustomAuthorizationFilter customAuthorizationFilter(){
+    public CustomAuthorizationFilter customAuthorizationFilter() {
         return new CustomAuthorizationFilter();
     }
 
@@ -42,9 +46,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-    @Bean
+    /* TODO: 24.02.2022 gotta ask about bean there, causing error "authenticationManager have to be initialized"
+    */
+    //    @Bean
     public CustomAuthenticationFilter customAuthenticationFilter() throws Exception {
-        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(jwtUtil,
+                authenticationManagerBean());
         customAuthenticationFilter.setFilterProcessesUrl("/user/login");
         return customAuthenticationFilter;
     }
