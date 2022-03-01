@@ -25,16 +25,19 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RestController
 @Slf4j
 @RequestMapping("/user")
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final JWTUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
 
     @Autowired
-    private JWTUtil jwtUtil;
-
-    @Autowired
-    AuthenticationManager authenticationManager;
+    public UserController(UserService userService, JWTUtil jwtUtil, AuthenticationManager authenticationManager) {
+        this.userService = userService;
+        this.jwtUtil = jwtUtil;
+        this.authenticationManager = authenticationManager;
+    }
 
 
     @GetMapping(path = "/users")

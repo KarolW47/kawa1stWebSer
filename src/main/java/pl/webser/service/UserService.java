@@ -24,11 +24,14 @@ import java.util.regex.Pattern;
 @Slf4j
 public class UserService implements UserDetailsService {
 
-    @Autowired
-    private  UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    private  RoleRepository roleRepository;
+    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -37,7 +40,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if(isUsernameTaken(username)){
+        if (isUsernameTaken(username)) {
             User userFromDb = getUserByUsername(username);
             log.info("User found in database: {}", username);
             Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -96,13 +99,13 @@ public class UserService implements UserDetailsService {
         return password.length() >= 6 && password.length() <= 35;
     }
 
-    public Boolean isPasswordEqual(String username, String password){
+    public Boolean isPasswordEqual(String username, String password) {
         String passwordInDB = userRepository.findByUsername(username).getPassword();
         String encodedPasswordToMatch = encodePassword(password);
         return passwordInDB.equals(encodedPasswordToMatch);
     }
 
-    public String encodePassword(String password){
+    public String encodePassword(String password) {
         return passwordEncoder().encode(password);
     }
 

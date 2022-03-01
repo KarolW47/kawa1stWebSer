@@ -23,8 +23,11 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @Slf4j
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JWTUtil jwtUtil;
+    private final JWTUtil jwtUtil;
+
+    public CustomAuthorizationFilter(JWTUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -42,6 +45,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     String[] roles = jwtUtil.jwtVerifier().verify(token).getClaim("roles").asArray(String.class);
                     Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
                     stream(roles).forEach(role -> authorities.add(new SimpleGrantedAuthority(role)));
+
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                             username, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
