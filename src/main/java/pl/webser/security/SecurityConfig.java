@@ -84,6 +84,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.addAllowedOrigin("http://localhost:4200");
+        config.addAllowedHeader("access-token");
+        config.addExposedHeader("access-token");
         source.registerCorsConfiguration("/**", config);
         return source;
     }

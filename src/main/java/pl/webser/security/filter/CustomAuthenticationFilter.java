@@ -54,7 +54,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                                             Authentication authentication) throws IOException, ServletException {
 
         String accessToken = jwtUtil.generateJwtToken(authentication);
-        response.setHeader("accessToken", accessToken);
+        response.setHeader("access-token", accessToken);
     }
 
 }
