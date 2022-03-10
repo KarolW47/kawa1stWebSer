@@ -1,7 +1,6 @@
 package pl.webser.security.filter;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -37,10 +36,9 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         if (request.getRequestURL().equals("/user/login") || request.getRequestURL().equals("/user/refreshToken")) {
             filterChain.doFilter(request, response);
         } else {
-            String authorizationHeader = request.getHeader(AUTHORIZATION);
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String token = request.getHeader(AUTHORIZATION);
+            if (token != null ) {
                 try {
-                    String token = authorizationHeader.substring("Bearer ".length());
                     String username = jwtUtil.getUserNameFromJwtToken(token);
                     String[] roles = jwtUtil.jwtVerifier().verify(token).getClaim("roles").asArray(String.class);
                     Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -57,6 +55,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
                 }
             } else {
+                log.info("Token is missing");
                 filterChain.doFilter(request, response);
             }
         }

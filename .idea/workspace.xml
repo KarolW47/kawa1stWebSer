@@ -5,9 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="79c41d99-26f5-4f4c-ae41-ef394976fa89" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/pl/webser/model/Post.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/pl/webser/repository/PostRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/pl/webser/service/PostService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/ServerApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/ServerApp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/model/Role.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/model/Role.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/model/User.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/security/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/security/filter/CustomAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/security/filter/CustomAuthenticationFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/security/filter/CustomAuthorizationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/security/filter/CustomAuthorizationFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/ServerApp.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pl/webser/ServerApp.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/model/Role.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pl/webser/model/Role.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/model/User.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pl/webser/model/User.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/security/filter/CustomAuthorizationFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pl/webser/security/filter/CustomAuthorizationFilter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/service/UserService.class" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,8 +29,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
         <option value="Enum" />
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>

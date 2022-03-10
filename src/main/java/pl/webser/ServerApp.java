@@ -21,7 +21,7 @@ public class ServerApp {
     @Bean
     CommandLineRunner run(UserService userService) {
         return args -> {
-            userService.saveUser(new User(null,"admin1", "admin1", "admin1", new ArrayList<>()));
+            userService.saveUser(new User(null,"admin1", "admin1", "admin1", new ArrayList<>(), null));
 
             userService.addRole(new Role(null,"ROLE_USER"));
             userService.addRole(new Role(null,"ROLE_MODERATOR"));

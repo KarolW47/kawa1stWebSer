@@ -30,9 +30,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public SecurityConfig (JWTUtil jwtUtil,
-                                         UserDetailsService userDetailsService,
-                                         PasswordEncoder passwordEncoder) {
+    public SecurityConfig(JWTUtil jwtUtil,
+                          UserDetailsService userDetailsService,
+                          PasswordEncoder passwordEncoder) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;

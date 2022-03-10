@@ -44,7 +44,7 @@ public class UserService implements UserDetailsService {
             User userFromDb = getUserByUsername(username);
             log.info("User found in database: {}", username);
             Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-            userFromDb.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
+            userFromDb.getUserRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
             return new org.springframework.security.core.userdetails.User(userFromDb.getUsername(),
                     userFromDb.getPassword(),
                     authorities);
@@ -66,7 +66,7 @@ public class UserService implements UserDetailsService {
         ArrayList<Role> roles = new ArrayList<>();
         Role role = roleRepository.findByRoleName("ROLE_USER");
         roles.add(role);
-        user.setRoles(roles);
+        user.setUserRoles(roles);
         return userRepository.save(user);
     }
 
@@ -114,7 +114,7 @@ public class UserService implements UserDetailsService {
         User user = getUserByUsername(username);
         Role role = roleRepository.findByRoleName(roleName);
         log.info("Saving role ({}) to user ({}) into database.", role.getRoleName(), user.getUsername());
-        user.getRoles().add(role);
+        user.getUserRoles().add(role);
     }
 
     public Boolean isRoleAlreadyExists(String roleName) {
