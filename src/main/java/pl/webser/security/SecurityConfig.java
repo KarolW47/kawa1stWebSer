@@ -69,6 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //----- order of these matchers matters -----
         http.authorizeRequests().antMatchers("/user/refreshToken/**", "/user/login/**", "/user/register/**").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.GET, "/user/users/**").hasAuthority("ROLE_USER");
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/post/**").hasAuthority("ROLE_USER");
 //        http.authorizeRequests().antMatchers(HttpMethod.POST, "/user/lock").hasAuthority(RoleEnum.ROLE_ADMIN
 //        .toString());
         //-------------------------------------------

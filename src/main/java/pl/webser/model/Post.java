@@ -23,8 +23,10 @@ public class Post {
     private User user;
 
     @NonNull
-    private Date date;
+    private Date createDate;
 
     @NonNull
     private String postTextMessage;
+
+    private Date updateDate;
 }

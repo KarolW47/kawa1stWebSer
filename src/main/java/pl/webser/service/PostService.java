@@ -4,10 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.webser.model.Post;
+import pl.webser.model.User;
 import pl.webser.repository.PostRepository;
 import pl.webser.repository.UserRepository;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -29,6 +31,28 @@ public class PostService {
         return postRepository.findAll();
     }
 
+    public Post getPost(Long id) {
+        log.info("Fetching post with id {}", id);
+        return postRepository.getById(id);
+    }
 
+    public void addPost(String username, String postText) {
+        User user = userRepository.findByUsername(username);
+        Post post = new Post();
+        post.setUser(user);
+        post.setPostTextMessage(postText);
+        post.setCreateDate(new Date(System.currentTimeMillis()));
+        postRepository.save(post);
+    }
 
+    public void deletePost(Long id) {
+        log.info("Deleting post with id {}", id);
+        postRepository.deleteById(id);
+    }
+
+    public void editPost(String postText, Long id) {
+        log.info("Saving post with id {}, after edit", id);
+        Date updateDate = new Date(System.currentTimeMillis());
+        postRepository.updatePostById(postText, updateDate, id);
+    }
 }

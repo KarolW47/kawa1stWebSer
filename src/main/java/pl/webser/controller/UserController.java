@@ -70,7 +70,7 @@ public class UserController {
         }
     }
 
-    @GetMapping(path = "/refreshToken")
+    @GetMapping(path = "/token/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationToken = request.getHeader(AUTHORIZATION);
         if (authorizationToken != null && authorizationToken.startsWith("Bearer ")) {
