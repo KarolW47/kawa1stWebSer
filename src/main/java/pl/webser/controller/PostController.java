@@ -2,12 +2,15 @@ package pl.webser.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.webser.model.Post;
 import pl.webser.model.User;
 import pl.webser.security.JWTUtil;
 import pl.webser.service.PostService;
 import pl.webser.service.UserService;
+
+import java.util.List;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -34,5 +37,10 @@ public class PostController {
         User user = userService.getUserByUsername(username);
         log.info("Successfully added post of user {}.", username);
         postService.addPost(user.getUsername() ,post.getPostTextMessage());
+    }
+
+    @GetMapping(path = "/posts")
+    public ResponseEntity<List<Post>> getPosts(){
+        return ResponseEntity.ok().body(postService.getPosts());
     }
 }
