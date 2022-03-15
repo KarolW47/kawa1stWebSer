@@ -12,5 +12,5 @@ import java.util.Date;
 public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("UPDATE Post p SET p.postTextMessage = ?1, p.updateDate = ?2 WHERE p.id = ?3")
-    void updatePostById(String postText, Date updateDate, Long id);
+    Post updatePostById(String postText, Date updateDate, Long id);
 }

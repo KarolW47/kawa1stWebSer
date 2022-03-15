@@ -36,13 +36,13 @@ public class PostService {
         return postRepository.getById(id);
     }
 
-    public void addPost(String username, String postText) {
+    public Post addPost(String username, String postText) {
         User user = userRepository.findByUsername(username);
         Post post = new Post();
         post.setUser(user);
         post.setPostTextMessage(postText);
         post.setCreateDate(new Date(System.currentTimeMillis()));
-        postRepository.save(post);
+        return postRepository.save(post);
     }
 
     public void deletePost(Long id) {
@@ -50,9 +50,9 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
-    public void editPost(String postText, Long id) {
+    public Post editPost(String postText, Long id) {
         log.info("Saving post with id {}, after edit", id);
         Date updateDate = new Date(System.currentTimeMillis());
-        postRepository.updatePostById(postText, updateDate, id);
+        return postRepository.updatePostById(postText, updateDate, id);
     }
 }

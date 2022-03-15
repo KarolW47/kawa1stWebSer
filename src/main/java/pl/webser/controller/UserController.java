@@ -70,30 +70,6 @@ public class UserController {
         }
     }
 
-    @GetMapping(path = "/token/refresh")
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String authorizationToken = request.getHeader(AUTHORIZATION);
-        if (authorizationToken != null && authorizationToken.startsWith("Bearer ")) {
-            try {
-                String refreshToken = authorizationToken.substring("Bearer ".length());
-                String username = jwtUtil.getUserNameFromJwtToken(refreshToken);
-                User user = userService.getUserByUsername(username);
-
-                Authentication authentication = authenticationManager.authenticate(
-                        new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
-//                SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                String accessToken = jwtUtil.generateJwtToken(authentication);
-                response.setHeader("accessToken", accessToken);
-            } catch (Exception exception) {
-                response.setHeader("Error", exception.getMessage());
-                response.setStatus(HttpStatus.FORBIDDEN.value());
-                response.sendError(HttpStatus.FORBIDDEN.value());
-            }
-        } else {
-            throw new RuntimeException("Refresh token is missing");
-        }
-    }
 
     public ResponseEntity<String> responseAfterUnsuccessfulValidation(String responseMessage) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(responseMessage);

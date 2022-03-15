@@ -1,8 +1,8 @@
 package pl.webser.security;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Value;
 
 import org.springframework.security.core.Authentication;
@@ -16,10 +16,13 @@ import java.util.stream.Collectors;
 @Component
 public class JWTUtil {
     @Value("${jwt.expiration.time}")
-    private int jwtExpirationTime;
+    private long jwtExpirationTime;
 
     @Value("${jwt.secret}")
     private String jwtSecret;
+
+    @Value("${jwt.refresh.expiration.time}")
+    private long jwtRefreshExpirationTime;
 
     public Algorithm generateAlgorithmWithPassedSecret(String secret) {
         return Algorithm.HMAC512(secret);
@@ -39,12 +42,26 @@ public class JWTUtil {
                 .sign(generateAlgorithmWithPassedSecret(jwtSecret));
     }
 
-    public JWTVerifier jwtVerifier() {
-        return JWT.require(generateAlgorithmWithPassedSecret(jwtSecret)).build();
+    public String generateJwtRefreshToken(Authentication authentication){
+
+        UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
+
+        return JWT.create()
+                .withSubject(userPrincipal.getUsername())
+                .withExpiresAt(new Date(System.currentTimeMillis() + jwtRefreshExpirationTime))
+                .sign(generateAlgorithmWithPassedSecret(jwtSecret));
+    }
+
+    public DecodedJWT decodeJWT(String token) {
+        return JWT.require(generateAlgorithmWithPassedSecret(jwtSecret)).build().verify(token);
     }
 
     public String getUserNameFromJwtToken(String token) {
-        return jwtVerifier().verify(token).getSubject();
+        return decodeJWT(token).getSubject();
+    }
+
+    public Date expirationTimeOfToken(String token){
+        return decodeJWT(token).getExpiresAt();
     }
 
 
