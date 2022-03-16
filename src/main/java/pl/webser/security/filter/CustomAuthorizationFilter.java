@@ -8,7 +8,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.filter.OncePerRequestFilter;
 import pl.webser.model.User;
 import pl.webser.security.JWTUtil;
@@ -51,7 +50,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         String refreshToken = request.getHeader(REFRESH_TOKEN_HEADER);
         if (accessToken == null || refreshToken == null) {
             log.info("Token is missing");
-            response.sendError(HttpStatus.FORBIDDEN.value());
+            responseAsForbidden(response);
             filterChain.doFilter(request, response);
         } else if (!(isTokenExpired(accessToken))) {
             try {
@@ -60,8 +59,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             } catch (Exception exception) {
                 log.error("Error: {}", exception.getMessage());
                 response.setHeader("error", exception.getMessage());
-                response.setStatus(HttpStatus.FORBIDDEN.value());
-                response.sendError(HttpStatus.FORBIDDEN.value());
+                responseAsForbidden(response);
             }
         } else if (!(isTokenExpired(refreshToken))) {
             try {
@@ -70,12 +68,16 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 response.setHeader(REFRESH_TOKEN_HEADER, refreshToken);
             } catch (Exception exception) {
                 response.setHeader("Error", exception.getMessage());
-                response.setStatus(HttpStatus.FORBIDDEN.value());
-                response.sendError(HttpStatus.FORBIDDEN.value());
+                responseAsForbidden(response);
             }
         } else {
-            // TODO: 15.03.2022 generate refresh token
+            responseAsForbidden(response);
         }
+    }
+
+    private void responseAsForbidden(HttpServletResponse response) throws IOException {
+        response.setStatus(HttpStatus.FORBIDDEN.value());
+        response.sendError(HttpStatus.FORBIDDEN.value());
     }
 
     private void dealingWithValidAccessToken(String accessToken) {
