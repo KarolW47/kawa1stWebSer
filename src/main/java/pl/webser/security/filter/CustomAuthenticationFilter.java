@@ -15,6 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static pl.webser.security.filter.CustomAuthorizationFilter.ACCESS_TOKEN_HEADER;
+import static pl.webser.security.filter.CustomAuthorizationFilter.REFRESH_TOKEN_HEADER;
+
 @Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -55,8 +58,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
         String accessToken = jwtUtil.generateJwtToken(authentication);
         String refreshToken = jwtUtil.generateJwtRefreshToken(authentication);
-        response.setHeader("access_token", accessToken);
-        response.setHeader("refresh_token", refreshToken);
+        response.setHeader(ACCESS_TOKEN_HEADER, accessToken);
+        response.setHeader(REFRESH_TOKEN_HEADER, refreshToken);
     }
 
 }

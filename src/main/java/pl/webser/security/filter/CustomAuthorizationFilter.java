@@ -27,8 +27,8 @@ import static java.util.Arrays.stream;
 @Slf4j
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
-    private static final String ACCESS_TOKEN_HEADER = "access_token";
-    private static final String REFRESH_TOKEN_HEADER = "refresh_token";
+    public static final String ACCESS_TOKEN_HEADER = "access_token";
+    public static final String REFRESH_TOKEN_HEADER = "refresh_token";
 
     private final JWTUtil jwtUtil;
     private final UserService userService;
@@ -48,11 +48,12 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
         String accessToken = request.getHeader(ACCESS_TOKEN_HEADER);
         String refreshToken = request.getHeader(REFRESH_TOKEN_HEADER);
-        if (accessToken == null || refreshToken == null) {
+        if (request.getServletPath().equals("/user/login") || request.getServletPath().equals("/user/register")){
+            filterChain.doFilter(request, response);
+        } else if (accessToken == null || refreshToken == null) {
             log.info("Token is missing");
             responseAsForbidden(response);
-            filterChain.doFilter(request, response);
-        } else if (!(isTokenExpired(accessToken))) {
+        } else if (!isTokenExpired(accessToken)) {
             try {
                 dealingWithValidAccessToken(accessToken);
                 filterChain.doFilter(request, response);
@@ -61,11 +62,12 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 response.setHeader("error", exception.getMessage());
                 responseAsForbidden(response);
             }
-        } else if (!(isTokenExpired(refreshToken))) {
+        } else if (!isTokenExpired(refreshToken)) {
             try {
                 String regeneratedAccessToken = dealingWithValidRefreshToken(refreshToken);
                 response.setHeader(ACCESS_TOKEN_HEADER, regeneratedAccessToken);
                 response.setHeader(REFRESH_TOKEN_HEADER, refreshToken);
+                filterChain.doFilter(request, response);
             } catch (Exception exception) {
                 response.setHeader("Error", exception.getMessage());
                 responseAsForbidden(response);

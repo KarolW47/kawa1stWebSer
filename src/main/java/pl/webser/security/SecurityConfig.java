@@ -21,6 +21,9 @@ import pl.webser.security.filter.CustomAuthenticationFilter;
 import pl.webser.security.filter.CustomAuthorizationFilter;
 import pl.webser.service.UserService;
 
+import static pl.webser.security.filter.CustomAuthorizationFilter.ACCESS_TOKEN_HEADER;
+import static pl.webser.security.filter.CustomAuthorizationFilter.REFRESH_TOKEN_HEADER;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -87,8 +90,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.addAllowedOrigin("http://localhost:4200");
-        config.addAllowedHeader("access-token");
-        config.addExposedHeader("access-token");
+        config.addAllowedHeader(ACCESS_TOKEN_HEADER);
+        config.addAllowedHeader(REFRESH_TOKEN_HEADER);
+        config.addExposedHeader(ACCESS_TOKEN_HEADER);
+        config.addExposedHeader(REFRESH_TOKEN_HEADER);
         source.registerCorsConfiguration("/**", config);
         return source;
     }

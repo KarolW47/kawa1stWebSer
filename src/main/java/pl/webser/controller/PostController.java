@@ -14,7 +14,7 @@ import pl.webser.service.UserService;
 import java.net.URI;
 import java.util.List;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static pl.webser.security.filter.CustomAuthorizationFilter.ACCESS_TOKEN_HEADER;
 
 @RestController
 @Slf4j
@@ -34,7 +34,7 @@ public class PostController {
     }
 
     @PostMapping(path = "/add")
-    public ResponseEntity<?> addPost(@RequestHeader(name = AUTHORIZATION) String token , @RequestBody Post post){
+    public ResponseEntity<?> addPost(@RequestHeader(name = ACCESS_TOKEN_HEADER) String token , @RequestBody Post post){
         String username = jwtUtil.getUserNameFromJwtToken(token);
         User user = userService.getUserByUsername(username);
         log.info("Successfully added post of user {}.", username);

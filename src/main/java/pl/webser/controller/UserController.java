@@ -5,22 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import pl.webser.security.JWTUtil;
 import pl.webser.model.User;
 import pl.webser.service.UserService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RestController
 @Slf4j
@@ -29,16 +21,11 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 public class UserController {
 
     private final UserService userService;
-    private final JWTUtil jwtUtil;
-    private final AuthenticationManager authenticationManager;
 
     @Autowired
-    public UserController(UserService userService, JWTUtil jwtUtil, AuthenticationManager authenticationManager) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.jwtUtil = jwtUtil;
-        this.authenticationManager = authenticationManager;
     }
-
 
     @GetMapping(path = "/users")
     public ResponseEntity<List<User>> getUsers() {
