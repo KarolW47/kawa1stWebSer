@@ -60,6 +60,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String refreshToken = jwtUtil.generateJwtRefreshToken(authentication);
         response.setHeader(ACCESS_TOKEN_HEADER, accessToken);
         response.setHeader(REFRESH_TOKEN_HEADER, refreshToken);
+        log.info("User: {} logged in successfully", authentication.getName());
     }
 
 }

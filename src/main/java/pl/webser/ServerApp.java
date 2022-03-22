@@ -8,6 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import pl.webser.model.Role;
 import pl.webser.model.User;
+import pl.webser.service.PostService;
 import pl.webser.service.UserService;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class ServerApp {
     }
 
     @Bean
-    CommandLineRunner run(UserService userService) {
+    CommandLineRunner run(UserService userService, PostService postService) {
         return args -> {
             userService.saveUser(new User(null,"admin1", "admin1", "admin1", new ArrayList<>(), null));
 
@@ -30,6 +31,9 @@ public class ServerApp {
             userService.addRoleToRegisteredUser("admin1", "ROLE_ADMIN");
             userService.addRoleToRegisteredUser("admin1", "ROLE_MODERATOR");
             userService.addRoleToRegisteredUser("admin1", "ROLE_USER");
+
+
+            postService.addPost("admin1", "Hello Everyone!");
         };
     }
 }

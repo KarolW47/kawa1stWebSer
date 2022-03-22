@@ -48,23 +48,25 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
         String accessToken = request.getHeader(ACCESS_TOKEN_HEADER);
         String refreshToken = request.getHeader(REFRESH_TOKEN_HEADER);
-        if (request.getServletPath().equals("/user/login") || request.getServletPath().equals("/user/register")){
+        if (request.getServletPath().equals("/user/login") || request.getServletPath().equals("/user/register")) {
             filterChain.doFilter(request, response);
         } else if (accessToken == null || refreshToken == null) {
             log.info("Token is missing");
             responseAsForbidden(response);
-        } else if (!isTokenExpired(accessToken)) {
+        } else if (isTokenBeforeExpirationTime(accessToken)) {
             try {
                 dealingWithValidAccessToken(accessToken);
+                log.info("Access granted.");
                 filterChain.doFilter(request, response);
             } catch (Exception exception) {
                 log.error("Error: {}", exception.getMessage());
                 response.setHeader("error", exception.getMessage());
                 responseAsForbidden(response);
             }
-        } else if (!isTokenExpired(refreshToken)) {
+        } else if (isTokenBeforeExpirationTime(refreshToken)) {
             try {
                 String regeneratedAccessToken = dealingWithValidRefreshToken(refreshToken);
+                log.info("Access granted, generated new access token.");
                 response.setHeader(ACCESS_TOKEN_HEADER, regeneratedAccessToken);
                 response.setHeader(REFRESH_TOKEN_HEADER, refreshToken);
                 filterChain.doFilter(request, response);
@@ -73,6 +75,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 responseAsForbidden(response);
             }
         } else {
+            log.info("Something went wrong.");
             responseAsForbidden(response);
         }
     }
@@ -105,9 +108,15 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         return jwtUtil.generateJwtToken(authentication);
     }
 
-    private boolean isTokenExpired(String token) {
+    private boolean isTokenBeforeExpirationTime(String token) {
         Date dateFromToken = jwtUtil.expirationTimeOfToken(token);
-        Date currentDate = new Date(System.currentTimeMillis());
-        return dateFromToken.after(currentDate);
+        log.info("date from token: {}",dateFromToken);
+        if (dateFromToken != null) {
+            Date currentDate = new Date(System.currentTimeMillis());
+            log.info("current date: {}", currentDate);
+            return dateFromToken.after(currentDate);
+        } else {
+            return false;
+        }
     }
 }
