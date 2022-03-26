@@ -31,16 +31,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JWTUtil jwtUtil;
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
-    private final UserService userService;
 
     @Autowired
     public SecurityConfig(JWTUtil jwtUtil,
                           UserDetailsService userDetailsService,
-                          PasswordEncoder passwordEncoder, UserService userService) {
+                          PasswordEncoder passwordEncoder) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
-        this.userService = userService;
     }
 
     @Override
@@ -50,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public CustomAuthorizationFilter customAuthorizationFilter() throws Exception {
-        return new CustomAuthorizationFilter(jwtUtil, userService,authenticationManagerBean());
+        return new CustomAuthorizationFilter(jwtUtil);
     }
 
     @Bean
@@ -72,7 +70,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         //----- order of these matchers matters -----
-        http.authorizeRequests().antMatchers("/user/login/**", "/user/register/**").permitAll();
+        http.authorizeRequests().antMatchers("/user/login/**", "/user/register/**", "/user/token/refresh").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.GET, "/user/users/**").hasAuthority("ROLE_USER");
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/post/**").hasAuthority("ROLE_USER");
 //        http.authorizeRequests().antMatchers(HttpMethod.POST, "/user/lock").hasAuthority(RoleEnum.ROLE_ADMIN

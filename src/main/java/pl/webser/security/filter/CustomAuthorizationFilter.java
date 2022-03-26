@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import pl.webser.model.Role;
 import pl.webser.model.User;
 import pl.webser.security.JWTUtil;
 import pl.webser.service.UserService;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
@@ -31,14 +33,9 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     public static final String REFRESH_TOKEN_HEADER = "refresh_token";
 
     private final JWTUtil jwtUtil;
-    private final UserService userService;
-    private final AuthenticationManager authenticationManager;
 
-    public CustomAuthorizationFilter(JWTUtil jwtUtil, UserService userService,
-                                     AuthenticationManager authenticationManager) {
+    public CustomAuthorizationFilter(JWTUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
-        this.userService = userService;
-        this.authenticationManager = authenticationManager;
     }
 
     @Override
@@ -48,7 +45,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
         String accessToken = request.getHeader(ACCESS_TOKEN_HEADER);
         String refreshToken = request.getHeader(REFRESH_TOKEN_HEADER);
-        if (request.getServletPath().equals("/user/login") || request.getServletPath().equals("/user/register")) {
+        if (request.getServletPath().equals("/user/login") || request.getServletPath().equals("/user/register")
+                || request.getServletPath().equals("/user/token/refresh")) {
             filterChain.doFilter(request, response);
         } else if (accessToken == null || refreshToken == null) {
             log.info("Token is missing");
@@ -65,13 +63,11 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             }
         } else if (isTokenBeforeExpirationTime(refreshToken)) {
             try {
-                String regeneratedAccessToken = dealingWithValidRefreshToken(refreshToken);
-                log.info("Access granted, generated new access token.");
-                response.setHeader(ACCESS_TOKEN_HEADER, regeneratedAccessToken);
-                response.setHeader(REFRESH_TOKEN_HEADER, refreshToken);
-                filterChain.doFilter(request, response);
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                response.sendError(HttpStatus.UNAUTHORIZED.value());
             } catch (Exception exception) {
-                response.setHeader("Error", exception.getMessage());
+                log.info("Error {}", exception.getMessage());
+                response.setHeader("error", exception.getMessage());
                 responseAsForbidden(response);
             }
         } else {
@@ -94,18 +90,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 username, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-    }
-
-    private String dealingWithValidRefreshToken(String refreshToken) {
-        String username = jwtUtil.getUserNameFromJwtToken(refreshToken);
-        User user = userService.getUserByUsername(username);
-
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getUsername(),
-                        user.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        return jwtUtil.generateJwtToken(authentication);
     }
 
     private boolean isTokenBeforeExpirationTime(String token) {
