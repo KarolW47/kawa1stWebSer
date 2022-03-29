@@ -78,6 +78,7 @@ public class UserController {
         if (refreshToken != null) {
             try {
                 String username = jwtUtil.getUserNameFromJwtToken(refreshToken);
+                log.info("Refreshing token for user: {}, in progress.", username);
                 User user = userService.getUserByUsername(username);
 
                 Authentication authentication = authenticationManager.authenticate(
@@ -87,10 +88,14 @@ public class UserController {
 
                 response.setHeader(ACCESS_TOKEN_HEADER, jwtUtil.generateJwtToken(authentication));
                 response.setHeader(REFRESH_TOKEN_HEADER, jwtUtil.generateJwtRefreshToken(authentication));
+                log.info("Refreshing token for user: {}, done.", username);
             } catch (Exception exception) {
+                log.info("Error in refreshing token for user: {}, occurred.",
+                        jwtUtil.getUserNameFromJwtToken(refreshToken));
                 response.sendError(HttpStatus.FORBIDDEN.value());
                 response.setStatus(HttpStatus.FORBIDDEN.value());
                 response.setHeader("error", exception.getMessage());
+                log.info("Exception message: {}.", exception.getMessage());
             }
         } else throw new RuntimeException("Refresh Token is missing.");
     }
