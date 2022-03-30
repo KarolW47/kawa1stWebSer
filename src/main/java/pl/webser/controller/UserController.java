@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import pl.webser.model.Role;
 import pl.webser.model.User;
 import pl.webser.security.JWTUtil;
 import pl.webser.service.UserService;
@@ -19,7 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static pl.webser.security.filter.CustomAuthorizationFilter.ACCESS_TOKEN_HEADER;
 import static pl.webser.security.filter.CustomAuthorizationFilter.REFRESH_TOKEN_HEADER;
@@ -80,14 +83,13 @@ public class UserController {
                 String username = jwtUtil.getUserNameFromJwtToken(refreshToken);
                 log.info("Refreshing token for user: {}, in progress.", username);
                 User user = userService.getUserByUsername(username);
+                List<String> roles = user.getUserRoles()
+                                .stream()
+                                        .map(Role::getRoleName)
+                                                .collect(Collectors.toList());
 
-                Authentication authentication = authenticationManager.authenticate(
-                        new UsernamePasswordAuthenticationToken(user.getUsername(),
-                                user.getPassword()));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                response.setHeader(ACCESS_TOKEN_HEADER, jwtUtil.generateJwtToken(authentication));
-                response.setHeader(REFRESH_TOKEN_HEADER, jwtUtil.generateJwtRefreshToken(authentication));
+                response.setHeader(ACCESS_TOKEN_HEADER, jwtUtil.generateJwtToken(user.getUsername(), roles));
+                response.setHeader(REFRESH_TOKEN_HEADER, jwtUtil.generateJwtRefreshToken(user.getUsername()));
                 log.info("Refreshing token for user: {}, done.", username);
             } catch (Exception exception) {
                 log.info("Error in refreshing token for user: {}, occurred.",

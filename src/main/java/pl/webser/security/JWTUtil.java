@@ -10,8 +10,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import pl.webser.model.Role;
+import pl.webser.model.User;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -29,26 +33,19 @@ public class JWTUtil {
         return Algorithm.HMAC512(secret);
     }
 
-    public String generateJwtToken(Authentication authentication) {
-
-        UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
+    public String generateJwtToken(String username, List<String> roles) {
 
         return JWT.create()
-                .withSubject(userPrincipal.getUsername())
+                .withSubject(username)
                 .withExpiresAt(new Date(System.currentTimeMillis() + jwtExpirationTime))
-                .withClaim("roles", userPrincipal.getAuthorities()
-                        .stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.toList()))
+                .withClaim("roles", roles.stream().toList())
                 .sign(generateAlgorithmWithPassedSecret(jwtSecret));
     }
 
-    public String generateJwtRefreshToken(Authentication authentication){
-
-        UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
+    public String generateJwtRefreshToken(String username) {
 
         return JWT.create()
-                .withSubject(userPrincipal.getUsername())
+                .withSubject(username)
                 .withExpiresAt(new Date(System.currentTimeMillis() + jwtRefreshExpirationTime))
                 .sign(generateAlgorithmWithPassedSecret(jwtSecret));
     }

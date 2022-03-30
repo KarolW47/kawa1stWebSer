@@ -6,7 +6,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import pl.webser.model.Role;
 import pl.webser.security.JWTUtil;
 
 import javax.servlet.FilterChain;
@@ -14,6 +18,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static pl.webser.security.filter.CustomAuthorizationFilter.ACCESS_TOKEN_HEADER;
 import static pl.webser.security.filter.CustomAuthorizationFilter.REFRESH_TOKEN_HEADER;
@@ -56,8 +63,14 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                                             FilterChain chain,
                                             Authentication authentication) throws IOException, ServletException {
 
-        String accessToken = jwtUtil.generateJwtToken(authentication);
-        String refreshToken = jwtUtil.generateJwtRefreshToken(authentication);
+        UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
+        List<String> roles = userPrincipal.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
+        String accessToken = jwtUtil.generateJwtToken(userPrincipal.getUsername(), roles);
+        String refreshToken = jwtUtil.generateJwtRefreshToken(userPrincipal.getUsername());
         response.setHeader(ACCESS_TOKEN_HEADER, accessToken);
         response.setHeader(REFRESH_TOKEN_HEADER, refreshToken);
         log.info("User: {} logged in successfully", authentication.getName());
