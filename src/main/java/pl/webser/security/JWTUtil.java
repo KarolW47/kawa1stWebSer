@@ -2,6 +2,7 @@ package pl.webser.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,7 +62,7 @@ public class JWTUtil {
     public Date expirationTimeOfToken(String token) throws TokenExpiredException {
         try {
             return decodeJWT(token).getExpiresAt();
-        } catch (TokenExpiredException tokenExpiredException) {
+        } catch (TokenExpiredException | JWTDecodeException tokenExpiredException) {
             return null;
         }
     }

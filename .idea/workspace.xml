@@ -6,10 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="79c41d99-26f5-4f4c-ae41-ef394976fa89" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/controller/PostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/controller/PostController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/security/JWTUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/security/JWTUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/security/filter/CustomAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/security/filter/CustomAuthenticationFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/service/PostService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/service/PostService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/security/JWTUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pl/webser/security/JWTUtil.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +48,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last.edited.regexp" value="asd@asd.asd" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.gutterIcons" />
+    <property name="settings.editor.selected.configurable" value="terminal" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -104,5 +105,9 @@
         <watch expression="http" />
       </configuration>
     </watches-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

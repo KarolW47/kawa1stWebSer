@@ -55,4 +55,9 @@ public class PostService {
         Date updateDate = new Date(System.currentTimeMillis());
         return postRepository.updatePostById(postText, updateDate, id);
     }
+
+    public boolean isPostBelongsToUser(User user, Post post) {
+        Post postFromDb = postRepository.getById(post.getId());
+        return postFromDb.getUser().equals(user);
+    }
 }

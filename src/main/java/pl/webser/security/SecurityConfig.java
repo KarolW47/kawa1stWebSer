@@ -19,7 +19,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import pl.webser.security.filter.CustomAuthenticationFilter;
 import pl.webser.security.filter.CustomAuthorizationFilter;
-import pl.webser.service.UserService;
 
 import static pl.webser.security.filter.CustomAuthorizationFilter.ACCESS_TOKEN_HEADER;
 import static pl.webser.security.filter.CustomAuthorizationFilter.REFRESH_TOKEN_HEADER;
@@ -28,6 +27,9 @@ import static pl.webser.security.filter.CustomAuthorizationFilter.REFRESH_TOKEN_
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private final String userRole = "ROLE_USER";
+    private final String moderatorRole = "ROLE_MODERATOR";
+    private final String adminRole = "ROLE_ADMIN";
     private final JWTUtil jwtUtil;
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
@@ -71,8 +73,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         //----- order of these matchers matters -----
         http.authorizeRequests().antMatchers("/user/login/**", "/user/register/**", "/user/token/refresh/**").permitAll();
-        http.authorizeRequests().antMatchers(HttpMethod.GET, "/user/users/**").hasAuthority("ROLE_USER");
-        http.authorizeRequests().antMatchers(HttpMethod.POST, "/post/**").hasAuthority("ROLE_USER");
+        http.authorizeRequests().antMatchers(HttpMethod.GET).hasAuthority(userRole);
+        http.authorizeRequests().antMatchers(HttpMethod.POST).hasAuthority(userRole);
+        http.authorizeRequests().antMatchers(HttpMethod.PATCH).hasAuthority(userRole);
+        http.authorizeRequests().antMatchers(HttpMethod.PUT).hasAuthority(userRole);
+        http.authorizeRequests().antMatchers(HttpMethod.DELETE).hasAuthority(userRole);
 //        http.authorizeRequests().antMatchers(HttpMethod.POST, "/user/lock").hasAuthority(RoleEnum.ROLE_ADMIN
 //        .toString());
         //-------------------------------------------
