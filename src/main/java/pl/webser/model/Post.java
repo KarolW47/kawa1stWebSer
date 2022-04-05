@@ -21,7 +21,7 @@ public class Post {
     private Long id;
 
     @NonNull
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     private User user;
 
     @NonNull

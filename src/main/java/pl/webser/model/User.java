@@ -41,7 +41,7 @@ public class User {
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<Role> userRoles = new ArrayList<>();
 
-    @OneToMany()
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "user")
     private List<Post> userPosts;
 }

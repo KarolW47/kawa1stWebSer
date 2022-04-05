@@ -6,11 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="79c41d99-26f5-4f4c-ae41-ef394976fa89" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/controller/PostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/controller/PostController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/security/JWTUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/security/JWTUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/security/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/service/PostService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/service/PostService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/security/JWTUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pl/webser/security/JWTUtil.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/model/Post.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/model/Post.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/webser/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/webser/model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/controller/PostController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pl/webser/controller/PostController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/security/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pl/webser/security/SecurityConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/pl/webser/service/PostService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pl/webser/service/PostService.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

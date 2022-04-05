@@ -55,7 +55,7 @@ public class PostController {
         User userFromDb = userService.getUserByUsername(jwtUtil.getUserNameFromJwtToken(token));
         if (postService.isPostBelongsToUser(userFromDb, post)) {
             postService.deletePost(post.getId());
-            return ResponseEntity.status(HttpStatus.OK).body("Post deleted successfully.");
+            return ResponseEntity.status(HttpStatus.OK).build();
         } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post do not belongs to user.");
     }
 
