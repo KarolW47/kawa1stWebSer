@@ -50,10 +50,10 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
-    public Post editPost(String postText, Long id) {
+    public void editPost(String postText, Long id) {
         log.info("Saving post with id {}, after edit", id);
         Date updateDate = new Date(System.currentTimeMillis());
-        return postRepository.updatePostById(postText, updateDate, id);
+        postRepository.updatePostById(postText, updateDate, id);
     }
 
     public boolean isPostBelongsToUser(User user, Post post) {

@@ -60,11 +60,12 @@ public class PostController {
     }
 
     @PatchMapping(path = "/edit")
-    public ResponseEntity<?> editPost(@RequestHeader(name = ACCESS_TOKEN_HEADER) String token, Post post) {
+    public ResponseEntity<?> editPost(@RequestHeader(name = ACCESS_TOKEN_HEADER) String token,
+                                      @RequestBody Post post) {
         User userFromDb = userService.getUserByUsername(jwtUtil.getUserNameFromJwtToken(token));
         if (postService.isPostBelongsToUser(userFromDb, post)) {
-            return ResponseEntity.status(HttpStatus.OK).body(postService.editPost(post.getPostTextMessage(),
-                    post.getId()));
+            postService.editPost(post.getPostTextMessage(), post.getId());
+            return ResponseEntity.status(HttpStatus.OK).build();
         } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post do not belongs to user.");
     }
 }
