@@ -45,7 +45,7 @@ public class PostController {
     }
 
     @GetMapping(path = "/posts")
-    public ResponseEntity<List<Post>> getPosts() {
+    public ResponseEntity<List<Post>> getAllPosts() {
         return ResponseEntity.ok().body(postService.getPosts());
     }
 

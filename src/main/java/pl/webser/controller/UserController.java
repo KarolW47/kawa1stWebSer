@@ -6,9 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.webser.model.Role;
@@ -20,29 +17,29 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static pl.webser.security.filter.CustomAuthorizationFilter.ACCESS_TOKEN_HEADER;
 import static pl.webser.security.filter.CustomAuthorizationFilter.REFRESH_TOKEN_HEADER;
 
+// TODO: 14.04.2022 Refactor fetching users with sensitive data,
+//                  for example in getAllUsers method we cant send this with passwords.
+//                  Also other methods needs to be checked at this point.
 
 @RestController
 @Slf4j
 @RequestMapping("/user")
 @CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
-
+    
     private final UserService userService;
     private final JWTUtil jwtUtil;
-    private final AuthenticationManager authenticationManager;
 
     @Autowired
-    public UserController(UserService userService, JWTUtil jwtUtil, AuthenticationManager authenticationManager) {
+    public UserController(UserService userService, JWTUtil jwtUtil) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
-        this.authenticationManager = authenticationManager;
     }
 
     @GetMapping(path = "/users")
@@ -75,6 +72,11 @@ public class UserController {
         }
     }
 
+    @GetMapping(path = "/profile")
+    public ResponseEntity<User> getSpecificUser(User user) {
+        return ResponseEntity.ok(userService.getUserByUsername(user.getUsername()));
+    }
+
     @PostMapping(path = "/token/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String refreshToken = request.getHeader(REFRESH_TOKEN_HEADER);
@@ -84,9 +86,9 @@ public class UserController {
                 log.info("Refreshing token for user: {}, in progress.", username);
                 User user = userService.getUserByUsername(username);
                 List<String> roles = user.getUserRoles()
-                                .stream()
-                                        .map(Role::getRoleName)
-                                                .collect(Collectors.toList());
+                        .stream()
+                        .map(Role::getRoleName)
+                        .collect(Collectors.toList());
 
                 response.setHeader(ACCESS_TOKEN_HEADER, jwtUtil.generateJwtToken(user.getUsername(), roles));
                 response.setHeader(REFRESH_TOKEN_HEADER, jwtUtil.generateJwtRefreshToken(user.getUsername()));

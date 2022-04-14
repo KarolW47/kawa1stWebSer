@@ -8,7 +8,6 @@ import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 
 @Entity
@@ -37,6 +36,9 @@ public class User {
     @Column(name = "password")
     @NotEmpty(message = "Password cannot be empty or null")
     private String password;
+
+    @Column(name = "about_me_info")
+    private String aboutMeInfo;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<Role> userRoles = new ArrayList<>();
