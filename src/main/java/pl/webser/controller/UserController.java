@@ -73,8 +73,8 @@ public class UserController {
     }
 
     @GetMapping(path = "/profile")
-    public ResponseEntity<User> getSpecificUser(User user) {
-        return ResponseEntity.ok(userService.getUserByUsername(user.getUsername()));
+    public ResponseEntity<User> getSpecificUser(@RequestParam String username) {
+        return ResponseEntity.ok(userService.getUserByUsername(username));
     }
 
     @PostMapping(path = "/token/refresh")
