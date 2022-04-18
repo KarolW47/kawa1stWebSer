@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import pl.webser.model.Post;
 import pl.webser.model.Role;
 import pl.webser.model.User;
 import pl.webser.security.JWTUtil;

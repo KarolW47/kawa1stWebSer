@@ -1,13 +1,13 @@
 package pl.webser.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 
 @Entity
@@ -41,7 +41,7 @@ public class User {
     private String aboutMeInfo;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private Collection<Role> userRoles = new ArrayList<>();
+    private List<Role> userRoles;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "user")

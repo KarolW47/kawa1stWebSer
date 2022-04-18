@@ -1,5 +1,6 @@
 package pl.webser.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,6 @@ public class Post {
     @Column(name = "id")
     private Long id;
 
-    @NonNull
     @ManyToOne()
     private User user;
 

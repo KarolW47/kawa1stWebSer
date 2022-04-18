@@ -99,12 +99,6 @@ public class UserService implements UserDetailsService {
         return password.length() >= 6 && password.length() <= 35;
     }
 
-    public Boolean isPasswordEqual(String username, String password) {
-        String passwordInDB = userRepository.findByUsername(username).getPassword();
-        String encodedPasswordToMatch = encodePassword(password);
-        return passwordInDB.equals(encodedPasswordToMatch);
-    }
-
     public String encodePassword(String password) {
         return passwordEncoder().encode(password);
     }

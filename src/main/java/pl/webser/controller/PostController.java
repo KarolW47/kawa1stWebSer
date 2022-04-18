@@ -13,6 +13,7 @@ import pl.webser.service.PostService;
 import pl.webser.service.UserService;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import static pl.webser.security.filter.CustomAuthorizationFilter.ACCESS_TOKEN_HEADER;
@@ -47,6 +48,11 @@ public class PostController {
     @GetMapping(path = "/posts")
     public ResponseEntity<List<Post>> getAllPosts() {
         return ResponseEntity.ok().body(postService.getPosts());
+    }
+
+    @GetMapping(path = "/ofUser")
+    public ResponseEntity<List<Post>> getUserPosts (@RequestParam String username) {
+        return ResponseEntity.ok(postService.getUserPosts(username));
     }
 
     @DeleteMapping(path = "/delete")
