@@ -13,7 +13,6 @@ import pl.webser.service.PostService;
 import pl.webser.service.UserService;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 import static pl.webser.security.filter.CustomAuthorizationFilter.ACCESS_TOKEN_HEADER;
@@ -21,7 +20,6 @@ import static pl.webser.security.filter.CustomAuthorizationFilter.ACCESS_TOKEN_H
 @RestController
 @Slf4j
 @RequestMapping("/post")
-@CrossOrigin(origins = "http://localhost:4200")
 public class PostController {
 
     private final PostService postService;
