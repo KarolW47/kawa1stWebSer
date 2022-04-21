@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import pl.webser.model.Role;
 import pl.webser.model.User;
 import pl.webser.service.PostService;
+import pl.webser.service.RoleService;
 import pl.webser.service.UserService;
 
 import java.util.ArrayList;
@@ -20,13 +21,13 @@ public class ServerApp {
     }
 
     @Bean
-    CommandLineRunner run(UserService userService, PostService postService) {
+    CommandLineRunner run(UserService userService, RoleService roleService, PostService postService) {
         return args -> {
             userService.saveUser(new User(null,"admin1", "admin1", "admin1",null, null,null));
 
-            userService.addRole(new Role(null,"ROLE_USER"));
-            userService.addRole(new Role(null,"ROLE_MODERATOR"));
-            userService.addRole(new Role(null, "ROLE_ADMIN"));
+            roleService.addRole(new Role(null,"ROLE_USER"));
+            roleService.addRole(new Role(null,"ROLE_MODERATOR"));
+            roleService.addRole(new Role(null, "ROLE_ADMIN"));
 
             userService.addRoleToRegisteredUser("admin1", "ROLE_ADMIN");
             userService.addRoleToRegisteredUser("admin1", "ROLE_MODERATOR");

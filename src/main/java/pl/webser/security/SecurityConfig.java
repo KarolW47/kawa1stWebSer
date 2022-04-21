@@ -27,9 +27,6 @@ import static pl.webser.security.filter.CustomAuthorizationFilter.REFRESH_TOKEN_
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final String userRole = "ROLE_USER";
-    private final String moderatorRole = "ROLE_MODERATOR";
-    private final String adminRole = "ROLE_ADMIN";
     private final JWTUtil jwtUtil;
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
@@ -68,6 +65,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        final String userRole = "ROLE_USER";
+        final String moderatorRole = "ROLE_MODERATOR";
+        final String adminRole = "ROLE_ADMIN";
+
         http.cors();
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

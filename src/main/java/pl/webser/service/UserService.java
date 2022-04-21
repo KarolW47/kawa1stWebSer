@@ -25,12 +25,12 @@ import java.util.regex.Pattern;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
 
     @Autowired
-    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserService(UserRepository userRepository, RoleService roleService) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+        this.roleService = roleService;
     }
 
     @Bean
@@ -64,8 +64,7 @@ public class UserService implements UserDetailsService {
         log.info("Saving new user ({}) to database.", user.getUsername());
         user.setPassword(encodePassword(user.getPassword()));
         ArrayList<Role> roles = new ArrayList<>();
-        Role role = roleRepository.findByRoleName("ROLE_USER");
-        roles.add(role);
+        roles.add(roleService.getRoleByRoleName("ROLE_USER"));
         user.setUserRoles(roles);
         return userRepository.save(user);
     }
@@ -106,18 +105,13 @@ public class UserService implements UserDetailsService {
 
     public void addRoleToRegisteredUser(String username, String roleName) {
         User user = getUserByUsername(username);
-        Role role = roleRepository.findByRoleName(roleName);
+        Role role = roleService.getRoleByRoleName(roleName);
         log.info("Saving role ({}) to user ({}) into database.", role.getRoleName(), user.getUsername());
-        user.getUserRoles().add(role);
+        List<Role> userRoles = user.getUserRoles();
+        userRoles.add(role);
+        userRepository.updateUserRolesById(userRoles, user.getId());
     }
 
-    public Boolean isRoleAlreadyExists(String roleName) {
-        return roleRepository.existsByRoleName(roleName);
-    }
-
-    public Role addRole(Role role) {
-        return roleRepository.save(role);
-    }
 
 
 }
