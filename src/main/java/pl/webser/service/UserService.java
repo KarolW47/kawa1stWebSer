@@ -12,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.webser.model.Role;
 import pl.webser.model.User;
-import pl.webser.repository.RoleRepository;
 import pl.webser.repository.UserRepository;
 
 import javax.transaction.Transactional;
@@ -55,12 +54,12 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username);
     }
 
-    public List<User> getUsers() {
+    public List<User> getAllUsers() {
         log.info("Fetching all users from database.");
         return userRepository.findAll();
     }
 
-    public User saveUser(User user) {
+    public User savePassedUser(User user) {
         log.info("Saving new user ({}) to database.", user.getUsername());
         user.setPassword(encodePassword(user.getPassword()));
         ArrayList<Role> roles = new ArrayList<>();
@@ -112,6 +111,30 @@ public class UserService implements UserDetailsService {
         userRepository.updateUserRolesById(userRoles, user.getId());
     }
 
+    public boolean isPasswordEqual(String passedPassword, String username) {
+        String passwordFromDb = userRepository.findByUsername(username).getPassword();
+        log.info("Checking if passed password is equal to actual password from DB for user: {}", username);
+        return passwordFromDb.equals(encodePassword(passedPassword));
+    }
 
+    public void deleteSpecificUser(String username) {
+        log.info("Deleting user: {}", username);
+        userRepository.deleteByUsername(username);
+    }
+
+    public void changeUsernameOfSpecificUser(String passedUsername, String oldUsername) {
+        log.info("Updating username of user: {}, with new value: {}", oldUsername, passedUsername);
+        userRepository.updateUserUsernameByUsername(passedUsername, oldUsername);
+    }
+
+    public void changePasswordOfSpecificUser(String passedPassword, String username) {
+        log.info("Updating password of user: {}", username);
+        userRepository.updateUserPasswordByUsername(passedPassword, username);
+    }
+
+    public void changeAboutMeInfoOfSpecificUser(String passedAboutMeInfo, String username) {
+        log.info("Updating aboutMeInfo of a user: {}", username);
+        userRepository.updateUserAboutMeInfoByUsername(passedAboutMeInfo, username);
+    }
 
 }
