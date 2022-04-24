@@ -1,9 +1,16 @@
 package pl.webser.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import pl.webser.model.Role;
 import pl.webser.repository.RoleRepository;
 
+import javax.transaction.Transactional;
+
+@Service
+@Transactional
+@Slf4j
 public class RoleService {
 
     private final RoleRepository roleRepository;

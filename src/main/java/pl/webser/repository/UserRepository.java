@@ -12,11 +12,12 @@ import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT CASE WHEN EXIST (SELECT u.username FROM User u WHERE u.username = ?1) THEN true ELSE false END")
+    @Query("SELECT CASE WHEN EXISTS (SELECT u.username FROM User u WHERE u.username = ?1) THEN true ELSE false END " +
+            "FROM User u")
     Boolean existsByUsername(String username);
 
-    @Query("SELECT CASE WHEN EXIST (SELECT u.emailAddress FROM User u WHERE u.emailAddress =?1) THEN true ELSE false " +
-            "END")
+    @Query("SELECT CASE WHEN EXISTS (SELECT u.emailAddress FROM User u WHERE u.emailAddress =?1) THEN true ELSE " +
+            "false END FROM User u")
     Boolean existsByEmailAddress(String emailAddress);
 
     @Query("SELECT u FROM User u WHERE u.username = ?1")
@@ -39,7 +40,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void updateUserAboutMeInfoByUsername(String aboutMeInfo, String username);
 
     @Modifying
-    @Query("UPDATE USER u SET u.userRoles = ?1 WHERE u.id = ?2")
+    @Query("UPDATE User u SET u.userRoles = ?1 WHERE u.id = ?2")
     void updateUserRolesById(List<Role> userRoles, Long id);
 
 }

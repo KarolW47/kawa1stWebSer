@@ -10,6 +10,6 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
     @Query("SELECT r FROM Role r WHERE r.roleName = ?1")
     Role findByRoleName(String roleName);
 
-    @Query("SELECT CASE WHEN EXISTS (SELECT r.roleName FROM Role r WHERE r.roleName = ?1) THEN true ELSE false END")
+    @Query("SELECT CASE WHEN EXISTS (SELECT r.roleName FROM Role r WHERE r.roleName = ?1) THEN true ELSE false END FROM Role r")
     Boolean existsByRoleName(String roleName);
 }

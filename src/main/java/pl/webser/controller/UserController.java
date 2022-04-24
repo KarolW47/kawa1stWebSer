@@ -103,7 +103,7 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/profile/delete")
-    public ResponseEntity<?> deleteUser(@RequestHeader String token, @RequestBody String confirmationPassword) {
+    public ResponseEntity<?> deleteUser(@RequestHeader String token, @RequestParam String confirmationPassword) {
         String username = jwtUtil.getUserNameFromJwtToken(token);
         if (userService.isPasswordEqual(confirmationPassword, username)) {
             userService.deleteSpecificUser(username);

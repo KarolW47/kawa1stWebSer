@@ -19,15 +19,14 @@ public class ServerApp {
     @Bean
     CommandLineRunner run(UserService userService, RoleService roleService, PostService postService) {
         return args -> {
-            userService.savePassedUser(new User(null,"admin1", "admin1", "admin1",null, null,null));
-
             roleService.addRole(new Role(null,"ROLE_USER"));
             roleService.addRole(new Role(null,"ROLE_MODERATOR"));
             roleService.addRole(new Role(null, "ROLE_ADMIN"));
 
+            userService.savePassedUser(new User(null,"admin1", "admin1", "admin1",null, null,null));
+
             userService.addRoleToRegisteredUser("admin1", "ROLE_ADMIN");
             userService.addRoleToRegisteredUser("admin1", "ROLE_MODERATOR");
-            userService.addRoleToRegisteredUser("admin1", "ROLE_USER");
 
 
             postService.addPost("admin1", "Hello Everyone!");

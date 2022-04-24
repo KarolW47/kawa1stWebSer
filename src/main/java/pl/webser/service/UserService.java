@@ -62,7 +62,7 @@ public class UserService implements UserDetailsService {
     public User savePassedUser(User user) {
         log.info("Saving new user ({}) to database.", user.getUsername());
         user.setPassword(encodePassword(user.getPassword()));
-        ArrayList<Role> roles = new ArrayList<>();
+        List<Role> roles = new ArrayList<>();
         roles.add(roleService.getRoleByRoleName("ROLE_USER"));
         user.setUserRoles(roles);
         return userRepository.save(user);
