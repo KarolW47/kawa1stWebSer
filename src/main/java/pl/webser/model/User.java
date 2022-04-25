@@ -41,6 +41,10 @@ public class User {
     private String aboutMeInfo;
 
     @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "role_user",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> userRoles;
 
     @OneToMany(cascade = CascadeType.ALL)

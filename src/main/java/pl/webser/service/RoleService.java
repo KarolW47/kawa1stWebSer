@@ -7,6 +7,7 @@ import pl.webser.model.Role;
 import pl.webser.repository.RoleRepository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @Transactional
@@ -30,5 +31,9 @@ public class RoleService {
 
     public Role getRoleByRoleName(String roleName) {
         return roleRepository.findByRoleName(roleName);
+    }
+
+    public List<Role> getAllRoles(){
+        return roleRepository.findAll();
     }
 }

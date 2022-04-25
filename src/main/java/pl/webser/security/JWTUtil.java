@@ -39,7 +39,7 @@ public class JWTUtil {
         return JWT.create()
                 .withSubject(username)
                 .withExpiresAt(new Date(System.currentTimeMillis() + jwtExpirationTime))
-                .withClaim("roles", roles.stream().toList())
+                .withClaim("roles", roles)
                 .sign(generateAlgorithmWithPassedSecret(jwtSecret));
     }
 

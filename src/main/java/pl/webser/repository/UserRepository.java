@@ -12,19 +12,13 @@ import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT CASE WHEN EXISTS (SELECT u.username FROM User u WHERE u.username = ?1) THEN true ELSE false END " +
-            "FROM User u")
     Boolean existsByUsername(String username);
 
-    @Query("SELECT CASE WHEN EXISTS (SELECT u.emailAddress FROM User u WHERE u.emailAddress =?1) THEN true ELSE " +
-            "false END FROM User u")
     Boolean existsByEmailAddress(String emailAddress);
 
-    @Query("SELECT u FROM User u WHERE u.username = ?1")
     User findByUsername(String username);
 
     @Modifying
-    @Query("DELETE FROM User u WHERE u.username = ?1")
     void deleteByUsername(String username);
 
     @Modifying
