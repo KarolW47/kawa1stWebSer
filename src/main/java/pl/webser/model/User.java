@@ -1,7 +1,5 @@
 package pl.webser.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.springframework.lang.NonNull;
 
@@ -40,12 +38,13 @@ public class User {
     @Column(name = "about_me_info")
     private String aboutMeInfo;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "role_user",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private List<Role> userRoles;
+            name = "user_role",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "role_id") }
+    )
+    private List<Role> userRoles = new ArrayList<Role>();
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "user")

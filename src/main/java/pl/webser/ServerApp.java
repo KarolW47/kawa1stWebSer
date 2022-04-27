@@ -18,21 +18,32 @@ public class ServerApp {
         SpringApplication.run(ServerApp.class, args);
     }
 
-//    @Bean
-//    @Transactional
-//    CommandLineRunner run(UserService userService, RoleService roleService, PostService postService) {
-//        return args -> {
-//            roleService.addRole(new Role(null,"ROLE_USER", null));
-//            roleService.addRole(new Role(null,"ROLE_MODERATOR", null));
-//            roleService.addRole(new Role(null, "ROLE_ADMIN", null));
-//
-//            userService.savePassedUser(new User(null,"admin1", "admin1", "admin1",null, null,null));
-//
-//            userService.addRoleToRegisteredUser("admin1", "ROLE_ADMIN");
-//            userService.addRoleToRegisteredUser("admin1", "ROLE_MODERATOR");
-//
-//
-//            postService.addPost("admin1", "Hello Everyone!");
-//        };
-//    }
+    @Bean
+    @Transactional
+    CommandLineRunner run(UserService userService, RoleService roleService, PostService postService) {
+        return args -> {
+
+            Role roleU = new Role();
+            Role roleM = new Role();
+            Role roleA = new Role();
+            roleU.setRoleName("ROLE_USER");
+            roleM.setRoleName("ROLE_MODERATOR");
+            roleA.setRoleName("ROLE_ADMIN");
+            roleService.addRole(roleU);
+            roleService.addRole(roleM);
+            roleService.addRole(roleA);
+
+            User adminUser = new User();
+            adminUser.setUsername("admin1");
+            adminUser.setPassword("admin1");
+            adminUser.setEmailAddress("admin1");
+            userService.savePassedUser(adminUser);
+
+            userService.addRoleToRegisteredUser("admin1", "ROLE_ADMIN");
+            userService.addRoleToRegisteredUser("admin1", "ROLE_MODERATOR");
+
+
+            postService.addPost("admin1", "Hello Everyone!");
+        };
+    }
 }

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,5 +26,5 @@ public class Role {
     private String roleName;
 
     @ManyToMany(mappedBy = "userRoles")
-    List<User> users;
+    List<User> users = new ArrayList<User>();
 }
