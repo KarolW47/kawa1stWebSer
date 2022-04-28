@@ -9,7 +9,8 @@ import java.util.*;
 
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
@@ -38,7 +39,7 @@ public class User {
     @Column(name = "about_me_info")
     private String aboutMeInfo;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(
             name = "user_role",
             joinColumns = { @JoinColumn(name = "user_id") },
@@ -49,4 +50,28 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "user")
     private List<Post> userPosts;
+
+
+    public void addUserRole(Role role) {
+        this.userRoles.add(role);
+        role.getUsers().add(this);
+    }
+
+    public void removeUserRole(Role role){
+        this.userRoles.remove(role);
+        role.getUsers().remove(this);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", emailAddress='" + emailAddress + '\'' +
+                ", password='" + password + '\'' +
+                ", aboutMeInfo='" + aboutMeInfo + '\'' +
+                ", userRoles=" + userRoles +
+                ", userPosts=" + userPosts +
+                '}';
+    }
 }

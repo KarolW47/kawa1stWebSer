@@ -1,16 +1,15 @@
 package pl.webser.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "posts")
@@ -34,4 +33,16 @@ public class Post {
 
     @Column(name = "update_date")
     private Date updateDate;
+
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "id=" + id +
+                ", user=" + user +
+                ", createDate=" + createDate +
+                ", postTextMessage='" + postTextMessage + '\'' +
+                ", updateDate=" + updateDate +
+                '}';
+    }
 }

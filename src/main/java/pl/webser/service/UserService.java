@@ -62,9 +62,7 @@ public class UserService implements UserDetailsService {
     public User savePassedUser(User user) {
         log.info("Saving new user ({}) to database.", user.getUsername());
         user.setPassword(encodePassword(user.getPassword()));
-        List<Role> roles = new ArrayList<>();
-        roles.add(roleService.getRoleByRoleName("ROLE_USER"));
-        user.setUserRoles(roles);
+        user.addUserRole(roleService.getRoleByRoleName("ROLE_USER"));
         return userRepository.save(user);
     }
 
@@ -106,9 +104,8 @@ public class UserService implements UserDetailsService {
         User user = getUserByUsername(username);
         Role role = roleService.getRoleByRoleName(roleName);
         log.info("Saving role ({}) to user ({}) into database.", role.getRoleName(), user.getUsername());
-        List<Role> userRoles = user.getUserRoles();
-        userRoles.add(role);
-        userRepository.updateUserRolesById(userRoles, user.getId());
+        user.addUserRole(role);
+        userRepository.updateUserWithNewRoleList(user, user.getId());
     }
 
     public boolean isPasswordEqual(String passedPassword, String username) {

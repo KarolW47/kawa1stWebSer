@@ -1,5 +1,6 @@
 package pl.webser.repository;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -33,8 +34,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("UPDATE User u SET u.aboutMeInfo = ?1 WHERE u.username = ?2")
     void updateUserAboutMeInfoByUsername(String aboutMeInfo, String username);
 
-    @Modifying
-    @Query("UPDATE User u SET u.userRoles = ?1 WHERE u.id = ?2")
-    void updateUserRolesById(List<Role> userRoles, Long id);
+    @Modifying()
+    @Query("UPDATE User u Set u = ?1 WHERE u.id = ?2")
+    void updateUserWithNewRoleList(User user, Long id);
 
 }

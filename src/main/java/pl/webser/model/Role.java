@@ -1,8 +1,7 @@
 package pl.webser.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
@@ -10,7 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "roles")
@@ -25,6 +25,14 @@ public class Role {
     @Column(name = "role_name")
     private String roleName;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "userRoles")
     List<User> users = new ArrayList<User>();
+
+
+    @Override
+    public String toString() {
+        return "id=" + id +
+                ", roleName='" + roleName + '\'';
+    }
 }
