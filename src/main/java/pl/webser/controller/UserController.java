@@ -125,14 +125,17 @@ public class UserController {
     }
 
     @PatchMapping(path = "/profile/password/change")
-    public ResponseEntity<?> changePassword(@RequestHeader String token, @RequestBody String passedNewPassword, String passedConfirmationPassword) {
+    public ResponseEntity<?> changePassword(@RequestHeader String token,
+                                            @RequestParam(name = "newPassword") String passedNewPassword,
+                                            @RequestParam(name = "oldPassword") String passedConfirmationPassword) {
         String username = jwtUtil.getUserNameFromJwtToken(token);
-        if (userService.isPasswordEqual(passedConfirmationPassword, username)){
-            if (userService.isPasswordValid(passedNewPassword)){
+        if (userService.isPasswordEqual(passedConfirmationPassword, username)) {
+            if (userService.isPasswordValid(passedNewPassword)) {
                 userService.changePasswordOfSpecificUser(passedNewPassword, username);
                 return ResponseEntity.ok().build();
             } else return responseAfterUnsuccessfulValidation("Password does not fit into required pattern.");
-        } return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     @PatchMapping(path = "/profile/about_me_info/change")
