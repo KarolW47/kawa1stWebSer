@@ -108,10 +108,10 @@ public class UserService implements UserDetailsService {
         userRepository.updateUserWithNewRoleList(user, user.getId());
     }
 
-    public boolean isPasswordEqual(String passedPassword, String username) {
+    public boolean isUserPasswordEqual(String passedPassword, String username) {
         String passwordFromDb = userRepository.findByUsername(username).getPassword();
         log.info("Checking if passed password is equal to actual password from DB for user: {}", username);
-        return passwordFromDb.equals(encodePassword(passedPassword));
+        return passwordEncoder().matches(passedPassword, passwordFromDb);
     }
 
     public void deleteSpecificUser(String username) {

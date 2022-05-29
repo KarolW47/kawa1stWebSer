@@ -103,16 +103,18 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/profile/delete")
-    public ResponseEntity<?> deleteUser(@RequestHeader String token, @RequestParam String confirmationPassword) {
+    public ResponseEntity<?> deleteUser(@RequestHeader(name = ACCESS_TOKEN_HEADER) String token,
+                                        @RequestParam(name = "confirmationPassword") String confirmationPassword) {
         String username = jwtUtil.getUserNameFromJwtToken(token);
-        if (userService.isPasswordEqual(confirmationPassword, username)) {
+        if (userService.isUserPasswordEqual(confirmationPassword, username)) {
             userService.deleteSpecificUser(username);
             return ResponseEntity.ok().build();
         } else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     @PatchMapping(path = "/profile/username/change")
-    public ResponseEntity<?> changeUsername(@RequestHeader String token, @RequestBody String passedUsername) {
+    public ResponseEntity<?> changeUsername(@RequestHeader(name = ACCESS_TOKEN_HEADER) String token,
+                                            @RequestBody String passedUsername) {
         String username = jwtUtil.getUserNameFromJwtToken(token);
         if (userService.isUsernameTaken(passedUsername)) {
             return responseAfterUnsuccessfulValidation("Username already exists");
@@ -125,11 +127,11 @@ public class UserController {
     }
 
     @PatchMapping(path = "/profile/password/change")
-    public ResponseEntity<?> changePassword(@RequestHeader String token,
+    public ResponseEntity<?> changePassword(@RequestHeader(name = ACCESS_TOKEN_HEADER) String token,
                                             @RequestParam(name = "newPassword") String passedNewPassword,
                                             @RequestParam(name = "oldPassword") String passedConfirmationPassword) {
         String username = jwtUtil.getUserNameFromJwtToken(token);
-        if (userService.isPasswordEqual(passedConfirmationPassword, username)) {
+        if (userService.isUserPasswordEqual(passedConfirmationPassword, username)) {
             if (userService.isPasswordValid(passedNewPassword)) {
                 userService.changePasswordOfSpecificUser(passedNewPassword, username);
                 return ResponseEntity.ok().build();
@@ -139,7 +141,8 @@ public class UserController {
     }
 
     @PatchMapping(path = "/profile/about_me_info/change")
-    public ResponseEntity<?> changeAboutMeInfo(@RequestHeader String token, @RequestBody String passedAboutMeInfo) {
+    public ResponseEntity<?> changeAboutMeInfo(@RequestHeader(name = ACCESS_TOKEN_HEADER) String token,
+                                               @RequestBody String passedAboutMeInfo) {
         String username = jwtUtil.getUserNameFromJwtToken(token);
         userService.changeAboutMeInfoOfSpecificUser(passedAboutMeInfo, username);
         return ResponseEntity.ok().build();

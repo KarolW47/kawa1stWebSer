@@ -2,6 +2,8 @@ package pl.webser.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
@@ -21,6 +23,7 @@ public class Post {
     private Long id;
 
     @ManyToOne()
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @NonNull

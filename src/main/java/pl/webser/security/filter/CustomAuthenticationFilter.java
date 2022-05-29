@@ -69,8 +69,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        log.info("%%%%%%%%%%%%%%%%%%%%%%%% {} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%", roles);
-
         String accessToken = jwtUtil.generateJwtToken(userPrincipal.getUsername(), roles);
         String refreshToken = jwtUtil.generateJwtRefreshToken(userPrincipal.getUsername());
         response.setHeader(ACCESS_TOKEN_HEADER, accessToken);
