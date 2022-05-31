@@ -118,7 +118,7 @@ public class UserController {
         String username = jwtUtil.getUserNameFromJwtToken(token);
         if (userService.isUsernameTaken(passedUsername)) {
             return responseAfterUnsuccessfulValidation("Username already exists");
-        } else if (userService.isUsernameValid(passedUsername)) {
+        } else if (!userService.isUsernameValid(passedUsername)) {
             return responseAfterUnsuccessfulValidation("Username does not fit into required pattern.");
         } else {
             userService.changeUsernameOfSpecificUser(passedUsername, username);
