@@ -63,7 +63,7 @@ public class UserController {
             return responseAfterUnsuccessfulValidation(
                     "Password does not fit into required pattern.");
         } else {
-            log.info("Successfully added user: " + user.getUsername() + " to DB.");
+            log.info("Successfully added user with email: " + user.getEmailAddress() + " to DB.");
             URI uri =
                     URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/register").toUriString());
             return ResponseEntity.created(uri).body(userService.savePassedUser(user));
@@ -80,20 +80,19 @@ public class UserController {
         String refreshToken = request.getHeader(REFRESH_TOKEN_HEADER);
         if (refreshToken != null) {
             try {
-                String username = jwtUtil.getUserNameFromJwtToken(refreshToken);
-                log.info("Refreshing token for user: {}, in progress.", username);
-                User user = userService.getUserByUsername(username);
+                User user = userService.getUserByEmailAddress(jwtUtil.getEmailAddressFromJwtToken(refreshToken));
+                log.info("Refreshing token for user with email: {}, in progress.", user.getEmailAddress());
                 List<String> roles = user.getUserRoles()
                         .stream()
                         .map(Role::getRoleName)
                         .collect(Collectors.toList());
 
-                response.setHeader(ACCESS_TOKEN_HEADER, jwtUtil.generateJwtToken(user.getUsername(), roles));
-                response.setHeader(REFRESH_TOKEN_HEADER, jwtUtil.generateJwtRefreshToken(user.getUsername()));
-                log.info("Refreshing token for user: {}, done.", username);
+                response.setHeader(ACCESS_TOKEN_HEADER, jwtUtil.generateJwtToken(user.getEmailAddress(), roles));
+                response.setHeader(REFRESH_TOKEN_HEADER, jwtUtil.generateJwtRefreshToken(user.getEmailAddress()));
+                log.info("Refreshing token for user with email: {}, done.", user.getEmailAddress());
             } catch (Exception exception) {
-                log.info("Error in refreshing token for user: {}, occurred.",
-                        jwtUtil.getUserNameFromJwtToken(refreshToken));
+                log.info("Error in refreshing token for user with email: {}, occurred.",
+                        jwtUtil.getEmailAddressFromJwtToken(refreshToken));
                 response.sendError(HttpStatus.FORBIDDEN.value());
                 response.setStatus(HttpStatus.FORBIDDEN.value());
                 response.setHeader("error", exception.getMessage());
@@ -105,9 +104,9 @@ public class UserController {
     @DeleteMapping(path = "/profile/delete")
     public ResponseEntity<?> deleteUser(@RequestHeader(name = ACCESS_TOKEN_HEADER) String token,
                                         @RequestParam(name = "confirmationPassword") String confirmationPassword) {
-        String username = jwtUtil.getUserNameFromJwtToken(token);
-        if (userService.isUserPasswordEqual(confirmationPassword, username)) {
-            userService.deleteSpecificUser(username);
+        String emailAddress = jwtUtil.getEmailAddressFromJwtToken(token);
+        if (userService.isUserPasswordEqual(confirmationPassword, emailAddress)) {
+            userService.deleteSpecificUser(emailAddress);
             return ResponseEntity.ok().build();
         } else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
@@ -115,13 +114,13 @@ public class UserController {
     @PatchMapping(path = "/profile/username/change")
     public ResponseEntity<?> changeUsername(@RequestHeader(name = ACCESS_TOKEN_HEADER) String token,
                                             @RequestBody String passedUsername) {
-        String username = jwtUtil.getUserNameFromJwtToken(token);
+        User user = userService.getUserByEmailAddress(jwtUtil.getEmailAddressFromJwtToken(token));
         if (userService.isUsernameTaken(passedUsername)) {
             return responseAfterUnsuccessfulValidation("Username already exists");
         } else if (!userService.isUsernameValid(passedUsername)) {
             return responseAfterUnsuccessfulValidation("Username does not fit into required pattern.");
         } else {
-            userService.changeUsernameOfSpecificUser(passedUsername, username);
+            userService.changeUsernameOfSpecificUser(passedUsername, user.getUsername(), user.getEmailAddress());
             return ResponseEntity.ok().build();
         }
     }
@@ -130,10 +129,10 @@ public class UserController {
     public ResponseEntity<?> changePassword(@RequestHeader(name = ACCESS_TOKEN_HEADER) String token,
                                             @RequestParam(name = "newPassword") String passedNewPassword,
                                             @RequestParam(name = "oldPassword") String passedConfirmationPassword) {
-        String username = jwtUtil.getUserNameFromJwtToken(token);
-        if (userService.isUserPasswordEqual(passedConfirmationPassword, username)) {
+        String emailAddress = jwtUtil.getEmailAddressFromJwtToken(token);
+        if (userService.isUserPasswordEqual(passedConfirmationPassword, emailAddress)) {
             if (userService.isPasswordValid(passedNewPassword)) {
-                userService.changePasswordOfSpecificUser(passedNewPassword, username);
+                userService.changePasswordOfSpecificUser(passedNewPassword, emailAddress);
                 return ResponseEntity.ok().build();
             } else return responseAfterUnsuccessfulValidation("Password does not fit into required pattern.");
         }
@@ -143,8 +142,8 @@ public class UserController {
     @PatchMapping(path = "/profile/about_me_info/change")
     public ResponseEntity<?> changeAboutMeInfo(@RequestHeader(name = ACCESS_TOKEN_HEADER) String token,
                                                @RequestBody String passedAboutMeInfo) {
-        String username = jwtUtil.getUserNameFromJwtToken(token);
-        userService.changeAboutMeInfoOfSpecificUser(passedAboutMeInfo, username);
+        String emailAddress = jwtUtil.getEmailAddressFromJwtToken(token);
+        userService.changeAboutMeInfoOfSpecificUser(passedAboutMeInfo, emailAddress);
         return ResponseEntity.ok().build();
     }
 

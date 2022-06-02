@@ -19,6 +19,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import pl.webser.security.filter.CustomAuthenticationFilter;
 import pl.webser.security.filter.CustomAuthorizationFilter;
+import pl.webser.service.UserService;
 
 import static pl.webser.security.filter.CustomAuthorizationFilter.ACCESS_TOKEN_HEADER;
 import static pl.webser.security.filter.CustomAuthorizationFilter.REFRESH_TOKEN_HEADER;
@@ -30,14 +31,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JWTUtil jwtUtil;
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
     @Autowired
     public SecurityConfig(JWTUtil jwtUtil,
                           UserDetailsService userDetailsService,
-                          PasswordEncoder passwordEncoder) {
+                          PasswordEncoder passwordEncoder,
+                          UserService userService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
+        this.userService = userService;
     }
 
     @Override
@@ -58,7 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     public CustomAuthenticationFilter customAuthenticationFilter() throws Exception {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(jwtUtil,
-                authenticationManagerBean());
+                authenticationManagerBean(), userService);
         customAuthenticationFilter.setFilterProcessesUrl("/user/login");
         return customAuthenticationFilter;
     }

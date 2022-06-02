@@ -41,8 +41,8 @@ public class PostService {
         return postRepository.getById(id);
     }
 
-    public Post addPost(String username, String postText) {
-        User user = userRepository.findByUsername(username);
+    public Post addPost(String emailAddress, String postText) {
+        User user = userRepository.findByEmailAddress(emailAddress);
         Post post = new Post();
         post.setUser(user);
         post.setPostTextMessage(postText);

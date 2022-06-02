@@ -75,13 +75,13 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     }
 
     private void dealingWithValidAccessToken(String accessToken) {
-        String username = jwtUtil.getUserNameFromJwtToken(accessToken);
+        String emailAddress = jwtUtil.getEmailAddressFromJwtToken(accessToken);
         String[] roles = jwtUtil.decodeJWT(accessToken).getClaim("roles").asArray(String.class);
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         stream(roles).forEach(role -> authorities.add(new SimpleGrantedAuthority(role)));
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                username, null, authorities);
+                emailAddress, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
 

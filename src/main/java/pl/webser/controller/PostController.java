@@ -35,12 +35,11 @@ public class PostController {
 
     @PostMapping(path = "/add")
     public ResponseEntity<?> addPost(@RequestHeader(name = ACCESS_TOKEN_HEADER) String token, @RequestBody Post post) {
-        String username = jwtUtil.getUserNameFromJwtToken(token);
-        User user = userService.getUserByUsername(username);
-        log.info("Successfully added post of user {}.", username);
+        String emailAddress = jwtUtil.getEmailAddressFromJwtToken(token);
+        log.info("Successfully added post of user with email: {}.", emailAddress);
         URI uri =
-                URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/register").toUriString());
-        return ResponseEntity.created(uri).body(postService.addPost(user.getUsername(), post.getPostTextMessage()));
+                URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/post/add").toUriString());
+        return ResponseEntity.created(uri).body(postService.addPost(emailAddress, post.getPostTextMessage()));
     }
 
     @GetMapping(path = "/posts")
@@ -56,7 +55,7 @@ public class PostController {
     @DeleteMapping(path = "/delete")
     public ResponseEntity<?> deletePost(@RequestHeader(name = ACCESS_TOKEN_HEADER) String token,
                                         @RequestBody Post post) {
-        User userFromDb = userService.getUserByUsername(jwtUtil.getUserNameFromJwtToken(token));
+        User userFromDb = userService.getUserByEmailAddress(jwtUtil.getEmailAddressFromJwtToken(token));
         if (postService.isPostBelongsToUser(userFromDb, post)) {
             postService.deletePost(post.getId());
             return ResponseEntity.status(HttpStatus.OK).build();
@@ -66,7 +65,7 @@ public class PostController {
     @PatchMapping(path = "/edit")
     public ResponseEntity<?> editPost(@RequestHeader(name = ACCESS_TOKEN_HEADER) String token,
                                       @RequestBody Post post) {
-        User userFromDb = userService.getUserByUsername(jwtUtil.getUserNameFromJwtToken(token));
+        User userFromDb = userService.getUserByEmailAddress(jwtUtil.getEmailAddressFromJwtToken(token));
         if (postService.isPostBelongsToUser(userFromDb, post)) {
             postService.editPost(post.getPostTextMessage(), post.getId());
             return ResponseEntity.status(HttpStatus.OK).build();

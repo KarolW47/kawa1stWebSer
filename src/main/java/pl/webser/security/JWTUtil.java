@@ -34,19 +34,19 @@ public class JWTUtil {
         return Algorithm.HMAC512(secret);
     }
 
-    public String generateJwtToken(String username, List<String> roles) {
+    public String generateJwtToken(String emailAddress, List<String> roles) {
 
         return JWT.create()
-                .withSubject(username)
+                .withSubject(emailAddress)
                 .withExpiresAt(new Date(System.currentTimeMillis() + jwtExpirationTime))
                 .withClaim("roles", roles)
                 .sign(generateAlgorithmWithPassedSecret(jwtSecret));
     }
 
-    public String generateJwtRefreshToken(String username) {
+    public String generateJwtRefreshToken(String emailAddress) {
 
         return JWT.create()
-                .withSubject(username)
+                .withSubject(emailAddress)
                 .withExpiresAt(new Date(System.currentTimeMillis() + jwtRefreshExpirationTime))
                 .sign(generateAlgorithmWithPassedSecret(jwtSecret));
     }
@@ -55,7 +55,7 @@ public class JWTUtil {
         return JWT.require(generateAlgorithmWithPassedSecret(jwtSecret)).build().verify(token);
     }
 
-    public String getUserNameFromJwtToken(String token) {
+    public String getEmailAddressFromJwtToken(String token) {
         return decodeJWT(token).getSubject();
     }
 

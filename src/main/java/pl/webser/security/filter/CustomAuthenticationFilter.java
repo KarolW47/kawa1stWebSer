@@ -7,18 +7,17 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import pl.webser.model.Role;
+import pl.webser.model.User;
 import pl.webser.security.JWTUtil;
+import pl.webser.service.UserService;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,10 +29,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     private final JWTUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
+    private final UserService userService;
 
-    public CustomAuthenticationFilter(JWTUtil jwtUtil ,AuthenticationManager authenticationManager){
+    public CustomAuthenticationFilter(JWTUtil jwtUtil ,AuthenticationManager authenticationManager, UserService userService){
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
+        this.userService = userService;
     }
 
     @Override
@@ -69,8 +70,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        String accessToken = jwtUtil.generateJwtToken(userPrincipal.getUsername(), roles);
-        String refreshToken = jwtUtil.generateJwtRefreshToken(userPrincipal.getUsername());
+        User userFromDb = userService.getUserByUsername(userPrincipal.getUsername());
+
+        String accessToken = jwtUtil.generateJwtToken(userFromDb.getEmailAddress(), roles);
+        String refreshToken = jwtUtil.generateJwtRefreshToken(userFromDb.getEmailAddress());
         response.setHeader(ACCESS_TOKEN_HEADER, accessToken);
         response.setHeader(REFRESH_TOKEN_HEADER, refreshToken);
         log.info("User: {} logged in successfully", authentication.getName());
