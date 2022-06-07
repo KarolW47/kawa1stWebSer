@@ -127,9 +127,10 @@ public class UserController {
 
     @PatchMapping(path = "/profile/password/change")
     public ResponseEntity<?> changePassword(@RequestHeader(name = ACCESS_TOKEN_HEADER) String token,
-                                            @RequestParam(name = "newPassword") String passedNewPassword,
-                                            @RequestParam(name = "oldPassword") String passedConfirmationPassword) {
+                                            @RequestBody String[] passwords) {
         String emailAddress = jwtUtil.getEmailAddressFromJwtToken(token);
+        String passedConfirmationPassword = passwords[0];
+        String passedNewPassword = passwords[1];
         if (userService.isUserPasswordEqual(passedConfirmationPassword, emailAddress)) {
             if (userService.isPasswordValid(passedNewPassword)) {
                 userService.changePasswordOfSpecificUser(passedNewPassword, emailAddress);

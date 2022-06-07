@@ -130,7 +130,7 @@ public class UserService implements UserDetailsService {
 
     public void changePasswordOfSpecificUser(String passedPassword, String emailAddress) {
         log.info("Updating password of user with email: {}", emailAddress);
-        userRepository.updateUserPasswordByEmailAddress(passedPassword, emailAddress);
+        userRepository.updateUserPasswordByEmailAddress(encodePassword(passedPassword), emailAddress);
     }
 
     public void changeAboutMeInfoOfSpecificUser(String passedAboutMeInfo, String emailAddress) {
