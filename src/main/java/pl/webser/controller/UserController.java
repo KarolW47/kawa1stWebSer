@@ -19,8 +19,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static pl.webser.security.filter.CustomAuthorizationFilter.ACCESS_TOKEN_HEADER;
-import static pl.webser.security.filter.CustomAuthorizationFilter.REFRESH_TOKEN_HEADER;
+import static pl.webser.security.filter.CustomAuthenticationFilter.USER_ID;
+import static pl.webser.security.filter.CustomAuthorizationFilter.*;
 
 // TODO: 14.04.2022 Refactor fetching users with sensitive data,
 //                  for example in getAllUsers method we cant send this with passwords.

@@ -21,6 +21,7 @@ import pl.webser.security.filter.CustomAuthenticationFilter;
 import pl.webser.security.filter.CustomAuthorizationFilter;
 import pl.webser.service.UserService;
 
+import static pl.webser.security.filter.CustomAuthenticationFilter.USER_ID;
 import static pl.webser.security.filter.CustomAuthorizationFilter.ACCESS_TOKEN_HEADER;
 import static pl.webser.security.filter.CustomAuthorizationFilter.REFRESH_TOKEN_HEADER;
 
@@ -102,6 +103,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         config.addAllowedHeader(REFRESH_TOKEN_HEADER);
         config.addExposedHeader(ACCESS_TOKEN_HEADER);
         config.addExposedHeader(REFRESH_TOKEN_HEADER);
+        config.addExposedHeader(USER_ID);
+        config.addAllowedHeader(USER_ID);
         source.registerCorsConfiguration("/**", config);
         return source;
     }

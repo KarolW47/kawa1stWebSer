@@ -21,11 +21,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static pl.webser.security.filter.CustomAuthorizationFilter.ACCESS_TOKEN_HEADER;
-import static pl.webser.security.filter.CustomAuthorizationFilter.REFRESH_TOKEN_HEADER;
+import static pl.webser.security.filter.CustomAuthorizationFilter.*;
 
 @Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
+    public static final String USER_ID = "user_id";
 
     private final JWTUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
@@ -76,6 +77,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String refreshToken = jwtUtil.generateJwtRefreshToken(userFromDb.getEmailAddress());
         response.setHeader(ACCESS_TOKEN_HEADER, accessToken);
         response.setHeader(REFRESH_TOKEN_HEADER, refreshToken);
+        response.setHeader(USER_ID, String.valueOf(userFromDb.getId()));
         log.info("User: {} logged in successfully", authentication.getName());
     }
 
