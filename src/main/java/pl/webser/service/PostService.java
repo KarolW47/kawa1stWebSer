@@ -31,9 +31,9 @@ public class PostService {
         return postRepository.findAll();
     }
 
-    public List<Post> getUserPosts(String username) {
-        log.info("Fetching all posts of user: {}", username);
-        return postRepository.findByUsername(username);
+    public List<Post> getUserPosts(Long id) {
+        log.info("Fetching all posts of user with id: {}", id);
+        return postRepository.findByUserId(id);
     }
 
     public Post getPost(Long id) {

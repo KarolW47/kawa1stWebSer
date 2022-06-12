@@ -48,8 +48,9 @@ public class PostController {
     }
 
     @GetMapping(path = "/ofUser")
-    public ResponseEntity<List<Post>> getUserPosts (@RequestParam String username) {
-        return ResponseEntity.ok(postService.getUserPosts(username));
+    public ResponseEntity<List<Post>> getUserPosts (@RequestParam(name = "user_id") String userId) {
+        Long id = Long.valueOf(userId);
+        return ResponseEntity.ok(postService.getUserPosts(id));
     }
 
     @DeleteMapping(path = "/delete")

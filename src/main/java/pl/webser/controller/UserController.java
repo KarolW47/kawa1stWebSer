@@ -17,9 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static pl.webser.security.filter.CustomAuthenticationFilter.USER_ID;
 import static pl.webser.security.filter.CustomAuthorizationFilter.*;
 
 // TODO: 14.04.2022 Refactor fetching users with sensitive data,
@@ -71,8 +71,9 @@ public class UserController {
     }
 
     @GetMapping(path = "/profile")
-    public ResponseEntity<User> getSpecificUser(@RequestParam String username) {
-        return ResponseEntity.ok(userService.getUserByUsername(username));
+    public ResponseEntity<Optional<User>> getSpecificUser(@RequestParam(name = "user_id") String userId) {
+        Long id = Long.valueOf(userId);
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @PostMapping(path = "/token/refresh")

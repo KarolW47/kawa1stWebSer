@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import pl.webser.model.User;
 
+import java.util.Optional;
+
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -14,6 +16,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Boolean existsByEmailAddress(String emailAddress);
 
     User findByUsername(String username);
+
+    Optional<User> findById(Long id);
 
     User findByEmailAddress(String emailAddress);
 
