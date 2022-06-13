@@ -1,7 +1,9 @@
 package pl.webser.security.filter;
 
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -41,8 +43,19 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
-        String username = request.getParameter("username");
+        String login = request.getParameter("login");
         String password = request.getParameter("password");
+        String username = null;
+        if (login.contains("@")){
+            try {
+                username = userService.getUserByEmailAddress(login).getUsername();
+            } catch (NullPointerException exception){
+                log.info("Provided email address: {} not found", login);
+            }
+        } else {
+            username = login;
+        }
+
         log.info("Attempt for - Username: {} and Password: {}", username, password);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,
                 password);
