@@ -39,8 +39,10 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
         String accessToken = request.getHeader(ACCESS_TOKEN_HEADER);
         String refreshToken = request.getHeader(REFRESH_TOKEN_HEADER);
-        if (request.getServletPath().equals("/user/login") || request.getServletPath().equals("/user/register")
-                || request.getServletPath().equals("/user/token/refresh")) {
+        if (request.getServletPath().equals("/user/login")
+                || request.getServletPath().equals("/user/register")
+                || request.getServletPath().equals("/user/token/refresh")
+                || request.getServletPath().equals("/user/reset_password")) {
             filterChain.doFilter(request, response);
         } else if (accessToken == null || refreshToken == null) {
             log.info("Token is missing");

@@ -1,8 +1,10 @@
 package pl.webser.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
-import org.springframework.lang.NonNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -21,7 +23,6 @@ public class Role {
     @Column(name = "id")
     private Long id;
 
-    @NonNull
     @Column(name = "role_name")
     private String roleName;
 

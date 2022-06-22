@@ -1,10 +1,11 @@
 package pl.webser.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -26,17 +27,14 @@ public class Post {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
-    @NonNull
     @Column(name = "create_date")
     private Date createDate;
 
-    @NonNull
     @Column(name = "post_text_message")
     private String postTextMessage;
 
     @Column(name = "update_date")
     private Date updateDate;
-
 
     @Override
     public String toString() {

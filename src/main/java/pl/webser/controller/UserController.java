@@ -5,12 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.webser.model.Role;
 import pl.webser.model.User;
 import pl.webser.security.JWTUtil;
+import pl.webser.service.ResetPasswordTokenService;
 import pl.webser.service.UserService;
+import pl.webser.util.EmailMessages;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,11 +37,22 @@ public class UserController {
 
     private final UserService userService;
     private final JWTUtil jwtUtil;
+    private final ResetPasswordTokenService resetPasswordTokenService;
+    private final JavaMailSender javaMailSender;
+    private final EmailMessages emailMessages;
 
     @Autowired
-    public UserController(UserService userService, JWTUtil jwtUtil) {
+    public UserController(
+            UserService userService,
+            JWTUtil jwtUtil,
+            ResetPasswordTokenService resetPasswordTokenService,
+            JavaMailSender javaMailSender,
+            EmailMessages emailMessages) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
+        this.resetPasswordTokenService = resetPasswordTokenService;
+        this.javaMailSender = javaMailSender;
+        this.emailMessages = emailMessages;
     }
 
     @GetMapping(path = "/users")
@@ -64,8 +79,8 @@ public class UserController {
                     "Password does not fit into required pattern.");
         } else {
             log.info("Successfully added user with email: " + user.getEmailAddress() + " to DB.");
-            URI uri =
-                    URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/register").toUriString());
+            URI uri = URI.create(
+                    ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/register").toUriString());
             return ResponseEntity.created(uri).body(userService.savePassedUser(user));
         }
     }
@@ -136,7 +151,8 @@ public class UserController {
             if (userService.isPasswordValid(passedNewPassword)) {
                 userService.changePasswordOfSpecificUser(passedNewPassword, emailAddress);
                 return ResponseEntity.ok().build();
-            } else return responseAfterUnsuccessfulValidation("Password does not fit into required pattern.");
+            } else return responseAfterUnsuccessfulValidation(
+                    "Password does not fit into required pattern.");
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
@@ -149,6 +165,26 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping(path = "/reset_password")
+    public ResponseEntity<?> resetPassword(HttpServletRequest request, @RequestBody String emailAddress) {
+        User user = userService.getUserByEmailAddress(emailAddress);
+        if (user == null) {
+            return ResponseEntity.badRequest().build();
+        } else {
+            String token = resetPasswordTokenService.createResetPasswordToken(user);
+            String url = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+            SimpleMailMessage simpleMailMessage =
+                    emailMessages.createResetPasswordTokenEmail(url, token, user);
+            javaMailSender.send(simpleMailMessage);
+            return ResponseEntity.ok().build();
+        }
+    }
+
+    @PostMapping(path = "/change_password")
+    public ResponseEntity<?> changePasswordWithResetPasswordToken(){
+        // TODO: 22.06.2022 token validation and reset password handling
+        return ResponseEntity.ok().build();
+    }
 
     public ResponseEntity<String> responseAfterUnsuccessfulValidation(String responseMessage) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(responseMessage);
