@@ -10,13 +10,13 @@ import pl.webser.model.User;
 import java.util.Locale;
 
 @Component
-public class EmailMessages {
+public class EmailMessage {
 
     private final MessageSource messageSource;
     private final Environment environment;
 
     @Autowired
-    public EmailMessages(MessageSource messageSource, Environment environment){
+    public EmailMessage(MessageSource messageSource, Environment environment){
         this.messageSource = messageSource;
         this.environment = environment;
     }

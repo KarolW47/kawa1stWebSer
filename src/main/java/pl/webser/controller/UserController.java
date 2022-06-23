@@ -14,7 +14,7 @@ import pl.webser.model.User;
 import pl.webser.security.JWTUtil;
 import pl.webser.service.ResetPasswordTokenService;
 import pl.webser.service.UserService;
-import pl.webser.util.EmailMessages;
+import pl.webser.util.EmailMessage;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,7 +39,7 @@ public class UserController {
     private final JWTUtil jwtUtil;
     private final ResetPasswordTokenService resetPasswordTokenService;
     private final JavaMailSender javaMailSender;
-    private final EmailMessages emailMessages;
+    private final EmailMessage emailMessage;
 
     @Autowired
     public UserController(
@@ -47,12 +47,12 @@ public class UserController {
             JWTUtil jwtUtil,
             ResetPasswordTokenService resetPasswordTokenService,
             JavaMailSender javaMailSender,
-            EmailMessages emailMessages) {
+            EmailMessage emailMessages) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
         this.resetPasswordTokenService = resetPasswordTokenService;
         this.javaMailSender = javaMailSender;
-        this.emailMessages = emailMessages;
+        this.emailMessage = emailMessages;
     }
 
     @GetMapping(path = "/users")
@@ -79,9 +79,8 @@ public class UserController {
                     "Password does not fit into required pattern.");
         } else {
             log.info("Successfully added user with email: " + user.getEmailAddress() + " to DB.");
-            URI uri = URI.create(
-                    ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/register").toUriString());
-            return ResponseEntity.created(uri).body(userService.savePassedUser(user));
+            userService.savePassedUser(user);
+            return ResponseEntity.ok().build();
         }
     }
 
@@ -174,15 +173,27 @@ public class UserController {
             String token = resetPasswordTokenService.createResetPasswordToken(user);
             String url = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
             SimpleMailMessage simpleMailMessage =
-                    emailMessages.createResetPasswordTokenEmail(url, token, user);
+                    emailMessage.createResetPasswordTokenEmail(url, token, user);
             javaMailSender.send(simpleMailMessage);
             return ResponseEntity.ok().build();
         }
     }
 
+    @GetMapping(path = "/change_password")
+    public ResponseEntity<?> validateResetPasswordTokenBeforePasswordChange(@RequestParam String token) {
+        if (!resetPasswordTokenService.isTokenFound(token)) {
+            return responseAfterUnsuccessfulValidation("ResetPasswordToken not found.");
+        } else if (resetPasswordTokenService.isTokenExpired(token)) {
+            return responseAfterUnsuccessfulValidation("ResetPasswordToken expired.");
+        } else return ResponseEntity.ok(token);
+    }
+
     @PostMapping(path = "/change_password")
-    public ResponseEntity<?> changePasswordWithResetPasswordToken(){
-        // TODO: 22.06.2022 token validation and reset password handling
+    public ResponseEntity<?> changePasswordWithResetPasswordToken(
+            @RequestParam String token,
+            @RequestBody String passedNewPassword) {
+        User user = resetPasswordTokenService.getUserByResetPasswordTokenSignedTo(token);
+        userService.changePasswordOfSpecificUser(passedNewPassword, user.getEmailAddress());
         return ResponseEntity.ok().build();
     }
 
