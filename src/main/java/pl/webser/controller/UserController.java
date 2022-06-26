@@ -188,7 +188,7 @@ public class UserController {
         } else return ResponseEntity.ok(token);
     }
 
-    @PostMapping(path = "/change_password")
+    @PatchMapping(path = "/change_password")
     public ResponseEntity<?> changePasswordWithResetPasswordToken(
             @RequestParam String token,
             @RequestBody String passedNewPassword) {
