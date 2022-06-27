@@ -192,9 +192,15 @@ public class UserController {
     public ResponseEntity<?> changePasswordWithResetPasswordToken(
             @RequestParam String token,
             @RequestBody String passedNewPassword) {
-        User user = resetPasswordTokenService.getUserByResetPasswordTokenSignedTo(token);
-        userService.changePasswordOfSpecificUser(passedNewPassword, user.getEmailAddress());
-        return ResponseEntity.ok().build();
+        if (!userService.isPasswordValid(passedNewPassword)) {
+            return responseAfterUnsuccessfulValidation("Password does not fit into required pattern.");
+        } else if (resetPasswordTokenService.isTokenFound(token) && !resetPasswordTokenService.isTokenExpired(token)) {
+            User user = resetPasswordTokenService.getUserByResetPasswordTokenSignedTo(token);
+            userService.changePasswordOfSpecificUser(passedNewPassword, user.getEmailAddress());
+            return ResponseEntity.ok().build();
+        } else {
+            return responseAfterUnsuccessfulValidation("Something went wrong");
+        }
     }
 
     public ResponseEntity<String> responseAfterUnsuccessfulValidation(String responseMessage) {
