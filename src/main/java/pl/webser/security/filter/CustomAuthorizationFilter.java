@@ -26,6 +26,12 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     public static final String ACCESS_TOKEN_HEADER = "access_token";
     public static final String REFRESH_TOKEN_HEADER = "refresh_token";
 
+    private final String[] ROUTES_WITHOUT_AUTHORIZATION = {
+            "/user/login",
+            "/user/register",
+            "/user/token/refresh",
+            "/user/reset_password"};
+
     private final JWTUtil jwtUtil;
 
     public CustomAuthorizationFilter(JWTUtil jwtUtil) {
@@ -39,10 +45,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
         String accessToken = request.getHeader(ACCESS_TOKEN_HEADER);
         String refreshToken = request.getHeader(REFRESH_TOKEN_HEADER);
-        if (request.getServletPath().equals("/user/login")
-                || request.getServletPath().equals("/user/register")
-                || request.getServletPath().equals("/user/token/refresh")
-                || request.getServletPath().equals("/user/reset_password")) {
+        if (stream(ROUTES_WITHOUT_AUTHORIZATION).anyMatch(element -> element.equals(request.getServletPath()))) {
             filterChain.doFilter(request, response);
         } else if (accessToken == null || refreshToken == null) {
             log.info("Token is missing");

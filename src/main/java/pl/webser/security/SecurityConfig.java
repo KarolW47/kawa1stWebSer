@@ -78,6 +78,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         //----- order of these matchers matters -----
+        http.authorizeRequests().antMatchers(
+                "/user/login",
+                "/user/register",
+                "/user/token/refresh",
+                "/user/reset_password").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.GET).hasAuthority(userRole);
         http.authorizeRequests().antMatchers(HttpMethod.POST).hasAuthority(userRole);
         http.authorizeRequests().antMatchers(HttpMethod.PATCH).hasAuthority(userRole);
