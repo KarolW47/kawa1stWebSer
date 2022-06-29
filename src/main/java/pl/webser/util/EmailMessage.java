@@ -1,6 +1,7 @@
 package pl.webser.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
@@ -10,13 +11,14 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Component;
 import pl.webser.model.User;
 
-import java.util.Locale;
-
 @Component
 public class EmailMessage {
 
     private final MessageSource messageSource;
     private final Environment environment;
+
+    @Value("${email.support}")
+    private String emialSupport;
 
     @Autowired
     public EmailMessage(MessageSource messageSource, Environment environment) {
@@ -36,7 +38,7 @@ public class EmailMessage {
         simpleMailMessage.setTo(user.getEmailAddress());
         simpleMailMessage.setSubject("Reset Password");
         simpleMailMessage.setText(message + " \r\n" + url);
-        simpleMailMessage.setFrom(environment.getProperty("support.email"));
+        simpleMailMessage.setFrom(emialSupport);
         return simpleMailMessage;
     }
 }
