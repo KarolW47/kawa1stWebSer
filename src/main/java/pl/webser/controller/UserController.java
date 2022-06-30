@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.webser.model.Role;
 import pl.webser.model.User;
 import pl.webser.security.JWTUtil;
@@ -19,16 +18,12 @@ import pl.webser.util.EmailMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static pl.webser.security.filter.CustomAuthorizationFilter.*;
-
-// TODO: 14.04.2022 Refactor fetching users with sensitive data,
-//                  for example in getAllUsers method we cant send this with passwords.
-//                  Also other methods needs to be checked at this point.
+import static pl.webser.security.filter.CustomAuthorizationFilter.ACCESS_TOKEN_HEADER;
+import static pl.webser.security.filter.CustomAuthorizationFilter.REFRESH_TOKEN_HEADER;
 
 @RestController
 @Slf4j
