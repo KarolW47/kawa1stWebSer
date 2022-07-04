@@ -116,7 +116,7 @@ public class UserService implements UserDetailsService {
         userRepository.updateUserWithNewRoleList(user, user.getId());
     }
 
-    public boolean isUserPasswordEqual(String passedPassword, String emailAddress) {
+    public boolean isUserPasswordEqualToStored(String passedPassword, String emailAddress) {
         String passwordFromDb = userRepository.findByEmailAddress(emailAddress).getPassword();
         log.info("Checking if passed password is equal to actual password from DB for user with email: {}", emailAddress);
         return passwordEncoder().matches(passedPassword, passwordFromDb);

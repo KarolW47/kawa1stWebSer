@@ -60,7 +60,7 @@ public class PostController {
         if (postService.isPostBelongsToUser(userFromDb, post)) {
             postService.deletePost(post.getId());
             return ResponseEntity.status(HttpStatus.OK).build();
-        } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post do not belongs to user.");
+        } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @PatchMapping(path = "/edit")
@@ -70,6 +70,6 @@ public class PostController {
         if (postService.isPostBelongsToUser(userFromDb, post)) {
             postService.editPost(post.getPostTextMessage(), post.getId());
             return ResponseEntity.status(HttpStatus.OK).build();
-        } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post do not belongs to user.");
+        } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }

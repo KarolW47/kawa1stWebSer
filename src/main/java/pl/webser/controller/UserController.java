@@ -58,19 +58,19 @@ public class UserController {
     @PostMapping(path = "/register")
     public ResponseEntity<?> addUser(@RequestBody User user) {
         if (userService.isUsernameTaken(user.getUsername())) {
-            return responseAfterUnsuccessfulValidation(
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
                     "Username already exists.");
         } else if (!userService.isUsernameValid(user.getUsername())) {
-            return responseAfterUnsuccessfulValidation(
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
                     "Username does not fit into required pattern.");
         } else if (userService.isEmailAddressTaken(user.getEmailAddress())) {
-            return responseAfterUnsuccessfulValidation(
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
                     "Account with this email address already exists.");
         } else if (!userService.isEmailAddressValid(user.getEmailAddress())) {
-            return responseAfterUnsuccessfulValidation(
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
                     "Email address does not fit into required pattern.");
         } else if (!userService.isPasswordValid(user.getPassword())) {
-            return responseAfterUnsuccessfulValidation(
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
                     "Password does not fit into required pattern.");
         } else {
             log.info("Successfully added user with email: " + user.getEmailAddress() + " to DB.");
@@ -115,10 +115,12 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@RequestHeader(name = ACCESS_TOKEN_HEADER) String token,
                                         @RequestParam(name = "confirmationPassword") String confirmationPassword) {
         String emailAddress = jwtUtil.getEmailAddressFromJwtToken(token);
-        if (userService.isUserPasswordEqual(confirmationPassword, emailAddress)) {
+        if (!userService.isUserPasswordEqualToStored(confirmationPassword, emailAddress)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong present password.");
+        } else {
             userService.deleteSpecificUser(emailAddress);
             return ResponseEntity.ok().build();
-        } else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     @PatchMapping(path = "/profile/username/change")
@@ -126,9 +128,10 @@ public class UserController {
                                             @RequestBody String passedUsername) {
         User user = userService.getUserByEmailAddress(jwtUtil.getEmailAddressFromJwtToken(token));
         if (userService.isUsernameTaken(passedUsername)) {
-            return responseAfterUnsuccessfulValidation("Username already exists");
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Username already exists.");
         } else if (!userService.isUsernameValid(passedUsername)) {
-            return responseAfterUnsuccessfulValidation("Username does not fit into required pattern.");
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
+                    "Username does not fit into required pattern.");
         } else {
             userService.changeUsernameOfSpecificUser(passedUsername, user.getUsername(), user.getEmailAddress());
             return ResponseEntity.ok().build();
@@ -141,14 +144,16 @@ public class UserController {
         String emailAddress = jwtUtil.getEmailAddressFromJwtToken(token);
         String passedConfirmationPassword = passwords[0];
         String passedNewPassword = passwords[1];
-        if (userService.isUserPasswordEqual(passedConfirmationPassword, emailAddress)) {
-            if (userService.isPasswordValid(passedNewPassword)) {
-                userService.changePasswordOfSpecificUser(passedNewPassword, emailAddress);
-                return ResponseEntity.ok().build();
-            } else return responseAfterUnsuccessfulValidation(
+
+        if (!userService.isUserPasswordEqualToStored(passedConfirmationPassword, emailAddress)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong present password.");
+        } else if (!userService.isPasswordValid(passedNewPassword)) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
                     "Password does not fit into required pattern.");
+        } else {
+            userService.changePasswordOfSpecificUser(passedNewPassword, emailAddress);
+            return ResponseEntity.ok().build();
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     @PatchMapping(path = "/profile/about_me_info/change")
@@ -163,7 +168,7 @@ public class UserController {
     public ResponseEntity<?> resetPassword(HttpServletRequest request, @RequestBody String emailAddress) {
         User user = userService.getUserByEmailAddress(emailAddress);
         if (user == null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User with that email does not exist.");
         } else {
             String token = resetPasswordTokenService.createResetPasswordToken(user);
             String url = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
@@ -177,9 +182,9 @@ public class UserController {
     @GetMapping(path = "/change_password")
     public ResponseEntity<?> validateResetPasswordTokenBeforePasswordChange(@RequestParam String token) {
         if (!resetPasswordTokenService.isTokenFound(token)) {
-            return responseAfterUnsuccessfulValidation("ResetPasswordToken not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ResetPasswordToken not found, try again later.");
         } else if (resetPasswordTokenService.isTokenExpired(token)) {
-            return responseAfterUnsuccessfulValidation("ResetPasswordToken expired.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("ResetPasswordToken expired.");
         } else return ResponseEntity.ok(token);
     }
 
@@ -188,18 +193,15 @@ public class UserController {
             @RequestParam String token,
             @RequestBody String passedNewPassword) {
         if (!userService.isPasswordValid(passedNewPassword)) {
-            return responseAfterUnsuccessfulValidation("Password does not fit into required pattern.");
-        } else if (resetPasswordTokenService.isTokenFound(token) && !resetPasswordTokenService.isTokenExpired(token)) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
+                    "Password does not fit into required pattern.");
+        } else if (!resetPasswordTokenService.isTokenFound(token) && resetPasswordTokenService.isTokenExpired(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    "Token don't exists or expired, try reset your password later.");
+        } else {
             User user = resetPasswordTokenService.getUserByResetPasswordTokenSignedTo(token);
             userService.changePasswordOfSpecificUser(passedNewPassword, user.getEmailAddress());
             return ResponseEntity.ok().build();
-        } else {
-            return responseAfterUnsuccessfulValidation("Something went wrong");
         }
     }
-
-    public ResponseEntity<String> responseAfterUnsuccessfulValidation(String responseMessage) {
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(responseMessage);
-    }
-
 }
