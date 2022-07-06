@@ -1,9 +1,7 @@
 package pl.webser.security.filter;
 
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,7 +21,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static pl.webser.security.filter.CustomAuthorizationFilter.*;
+import static pl.webser.security.filter.CustomAuthorizationFilter.ACCESS_TOKEN_HEADER;
+import static pl.webser.security.filter.CustomAuthorizationFilter.REFRESH_TOKEN_HEADER;
 
 @Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -34,7 +33,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
 
-    public CustomAuthenticationFilter(JWTUtil jwtUtil ,AuthenticationManager authenticationManager, UserService userService){
+    public CustomAuthenticationFilter(JWTUtil jwtUtil, AuthenticationManager authenticationManager,
+                                      UserService userService) {
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
         this.userService = userService;
@@ -46,10 +46,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String login = request.getParameter("login");
         String password = request.getParameter("password");
         String username = null;
-        if (login.contains("@")){
+        if (login.contains("@")) {
             try {
                 username = userService.getUserByEmailAddress(login).getUsername();
-            } catch (NullPointerException exception){
+            } catch (NullPointerException exception) {
                 log.info("Provided email address: {} not found", login);
             }
         } else {
@@ -66,10 +66,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request,
                                               HttpServletResponse response,
-                                              AuthenticationException authenticationException) throws IOException,
-            ServletException {
+                                              AuthenticationException authenticationException) throws IOException {
         log.error("Unauthorized error: {}", authenticationException.getMessage());
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: Unauthorized");
+        response.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
 
     @Override
