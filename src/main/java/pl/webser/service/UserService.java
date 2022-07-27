@@ -67,11 +67,11 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
-    public User savePassedUser(User user) {
+    public void savePassedUser(User user) {
         log.info("Saving new user with email: {} to database.", user.getEmailAddress());
         user.setPassword(encodePassword(user.getPassword()));
         user.addUserRole(roleService.getRoleByRoleName("ROLE_USER"));
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     public Boolean isUsernameValid(String username) {

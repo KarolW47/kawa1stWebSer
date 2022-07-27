@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import pl.webser.model.Post;
 import pl.webser.model.User;
 import pl.webser.repository.PostRepository;
-import pl.webser.repository.UserRepository;
 
 import javax.transaction.Transactional;
 import java.util.Date;
@@ -18,12 +17,12 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Autowired
-    public PostService(PostRepository postRepository, UserRepository userRepository) {
+    public PostService(PostRepository postRepository, UserService userService) {
         this.postRepository = postRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     public List<Post> getPosts() {
@@ -42,7 +41,7 @@ public class PostService {
     }
 
     public Post addPost(String emailAddress, String postText) {
-        User user = userRepository.findByEmailAddress(emailAddress);
+        User user = userService.getUserByEmailAddress(emailAddress);
         Post post = new Post();
         post.setUser(user);
         post.setPostTextMessage(postText);

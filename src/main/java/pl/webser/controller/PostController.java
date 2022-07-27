@@ -36,10 +36,11 @@ public class PostController {
     @PostMapping(path = "/add")
     public ResponseEntity<?> addPost(@RequestHeader(name = ACCESS_TOKEN_HEADER) String token, @RequestBody Post post) {
         String emailAddress = jwtUtil.getEmailAddressFromJwtToken(token);
+        postService.addPost(emailAddress, post.getPostTextMessage());
         log.info("Successfully added post of user with email: {}.", emailAddress);
         URI uri =
                 URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/post/add").toUriString());
-        return ResponseEntity.created(uri).body(postService.addPost(emailAddress, post.getPostTextMessage()));
+        return ResponseEntity.created(uri).build();
     }
 
     @GetMapping(path = "/posts")

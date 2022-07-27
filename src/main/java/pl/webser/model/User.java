@@ -37,6 +37,20 @@ public class User {
     @Column(name = "about_me_info")
     private String aboutMeInfo;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user")
+    private List<Post> userPosts;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "chatMessageFromUser")
+    private List<ChatMessage> chatMessagesFromUser;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "chatMessageToUser")
+    private List<ChatMessage> chatMessagesToUser;
+
     @ManyToMany
     @JoinTable(
             name = "user_role",
@@ -44,11 +58,6 @@ public class User {
             inverseJoinColumns = {@JoinColumn(name = "role_id")}
     )
     private List<Role> userRoles = new ArrayList<Role>();
-
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user")
-    private List<Post> userPosts;
-
 
     public void addUserRole(Role role) {
         this.userRoles.add(role);
