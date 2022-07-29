@@ -1,11 +1,10 @@
 package pl.webser.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -28,12 +27,18 @@ public class ChatMessage {
     @Column(name = "sent_date")
     private Date sentDate;
 
-    @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private User chatMessageFromUser;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(name = "email_of_sender")
+    private String emailOfSender;
 
-    @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private User chatMessageToUser;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(name = "email_of_receiver")
+    private String emailOfReceiver;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String usernameOfSender;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String usernameOfReceiver;
 
 }

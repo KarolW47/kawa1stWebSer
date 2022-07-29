@@ -41,16 +41,6 @@ public class User {
     @JoinColumn(name = "user")
     private List<Post> userPosts;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "chatMessageFromUser")
-    private List<ChatMessage> chatMessagesFromUser;
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "chatMessageToUser")
-    private List<ChatMessage> chatMessagesToUser;
-
     @ManyToMany
     @JoinTable(
             name = "user_role",
