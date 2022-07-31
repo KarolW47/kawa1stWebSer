@@ -25,13 +25,14 @@ public class ChatMessageService {
         this.userService = userService;
     }
 
-    public void addChatMessage(String message, String emailOfSender, String usernameOfReceiver) {
+    public ChatMessage addChatMessage(String message, String emailOfSender, String usernameOfReceiver) {
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setMessage(message);
         chatMessage.setSentDate(new Date(System.currentTimeMillis()));
         chatMessage.setEmailOfSender(emailOfSender);
         chatMessage.setEmailOfReceiver(userService.getUserByUsername(usernameOfReceiver).getEmailAddress());
         chatMessageRepository.save(chatMessage);
+        return chatMessage;
     }
 
     public List<ChatMessage> getChatMessagesWithChosenUser(String emailOfUser,
