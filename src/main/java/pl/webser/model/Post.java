@@ -30,7 +30,7 @@ public class Post {
     @Column(name = "create_date")
     private Date createDate;
 
-    @Column(name = "post_text_message")
+    @Column(name = "post_text_message", length = 1000)
     private String postTextMessage;
 
     @Column(name = "update_date")

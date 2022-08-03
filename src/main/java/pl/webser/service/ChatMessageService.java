@@ -7,9 +7,7 @@ import pl.webser.repository.ChatMessageRepository;
 
 import javax.transaction.Transactional;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -36,18 +34,18 @@ public class ChatMessageService {
     }
 
     public List<ChatMessage> getChatMessagesWithChosenUser(String emailOfUser,
-                                                                      String usernameOfChosenUserToChat) {
+                                                           String usernameOfChosenUserToChat) {
         String usernameOfUser = userService.getUserByEmailAddress(emailOfUser).getUsername();
         String emailOfChosenUserToChat = userService.getUserByUsername(usernameOfChosenUserToChat).getEmailAddress();
 
         List<ChatMessage> chatMessagesSentToChosenUser =
                 chatMessageRepository.findAllFromSenderToReceiverByEmail(emailOfUser,
-                                emailOfChosenUserToChat);
+                        emailOfChosenUserToChat);
         chatMessagesSentToChosenUser
-                        .forEach(cm -> {
-                            cm.setUsernameOfSender(usernameOfUser);
-                            cm.setUsernameOfReceiver(usernameOfChosenUserToChat);
-                        });
+                .forEach(cm -> {
+                    cm.setUsernameOfSender(usernameOfUser);
+                    cm.setUsernameOfReceiver(usernameOfChosenUserToChat);
+                });
 
         List<ChatMessage> chatMessagesReceivedFromChosenUser =
                 chatMessageRepository.findAllFromSenderToReceiverByEmail(emailOfChosenUserToChat,
