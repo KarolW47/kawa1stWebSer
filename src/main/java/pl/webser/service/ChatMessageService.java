@@ -3,6 +3,7 @@ package pl.webser.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.webser.model.ChatMessage;
+import pl.webser.model.User;
 import pl.webser.repository.ChatMessageRepository;
 
 import javax.transaction.Transactional;
@@ -23,11 +24,11 @@ public class ChatMessageService {
         this.userService = userService;
     }
 
-    public ChatMessage addChatMessage(String message, String emailOfSender, String usernameOfReceiver) {
+    public ChatMessage addChatMessage(String message, Long idOfSender, String usernameOfReceiver) {
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setMessage(message);
         chatMessage.setSentDate(new Date(System.currentTimeMillis()));
-        chatMessage.setEmailOfSender(emailOfSender);
+        chatMessage.setEmailOfSender(userService.getUserById(idOfSender).map(User::getEmailAddress).orElse(null));
         chatMessage.setEmailOfReceiver(userService.getUserByUsername(usernameOfReceiver).getEmailAddress());
         chatMessageRepository.save(chatMessage);
         return chatMessage;

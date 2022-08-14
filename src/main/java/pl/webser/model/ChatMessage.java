@@ -41,4 +41,7 @@ public class ChatMessage {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String usernameOfReceiver;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Long idOfSender;
+
 }

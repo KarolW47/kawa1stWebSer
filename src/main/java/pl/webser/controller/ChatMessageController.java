@@ -2,6 +2,7 @@ package pl.webser.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,10 +34,11 @@ public class ChatMessageController {
                 jwtUtil.getEmailAddressFromJwtToken(token), username));
     }
 
-    @MessageMapping("/chat_message")
-    @SendTo("/user")
-    public ChatMessage sendMessage(ChatMessage chatMessage, String token) {
-        return chatMessageService.addChatMessage(chatMessage.getMessage(), jwtUtil.getEmailAddressFromJwtToken(token),
+    @MessageMapping("/chat/{usernameOfReceiver}")
+    @SendTo("/user/{usernameOfReceiver}")
+    public ChatMessage sendMessage(@DestinationVariable String usernameOfReceiver, ChatMessage chatMessage) {
+        return chatMessageService.addChatMessage(chatMessage.getMessage(),
+                chatMessage.getIdOfSender(),
                 chatMessage.getUsernameOfReceiver());
     }
 }
