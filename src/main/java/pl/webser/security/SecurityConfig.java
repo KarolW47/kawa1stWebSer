@@ -105,6 +105,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.addAllowedOrigin("http://localhost:4200");
+        config.setAllowCredentials(true);
         config.addAllowedHeader(ACCESS_TOKEN_HEADER);
         config.addAllowedHeader(REFRESH_TOKEN_HEADER);
         config.addExposedHeader(ACCESS_TOKEN_HEADER);
