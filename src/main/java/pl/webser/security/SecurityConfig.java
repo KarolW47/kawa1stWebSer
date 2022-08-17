@@ -29,6 +29,10 @@ import static pl.webser.security.filter.CustomAuthorizationFilter.REFRESH_TOKEN_
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    public static final String ROLE_USER = "ROLE_USER";
+    public static final String ROLE_MODERATOR = "ROLE_MODERATOR";
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
+
     private final JWTUtil jwtUtil;
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
@@ -70,9 +74,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        final String userRole = "ROLE_USER";
-        final String moderatorRole = "ROLE_MODERATOR";
-        final String adminRole = "ROLE_ADMIN";
 
         http.cors();
         http.csrf().disable();
@@ -82,12 +83,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/login",
                 "/user/register",
                 "/user/token/refresh",
-                "/user/reset_password").permitAll();
-        http.authorizeRequests().antMatchers(HttpMethod.GET).hasAuthority(userRole);
-        http.authorizeRequests().antMatchers(HttpMethod.POST).hasAuthority(userRole);
-        http.authorizeRequests().antMatchers(HttpMethod.PATCH).hasAuthority(userRole);
-        http.authorizeRequests().antMatchers(HttpMethod.PUT).hasAuthority(userRole);
-        http.authorizeRequests().antMatchers(HttpMethod.DELETE).hasAuthority(userRole);
+                "/user/reset_password", "/chat/**").permitAll();
+        http.authorizeRequests().antMatchers(HttpMethod.GET).hasAuthority(ROLE_USER);
+        http.authorizeRequests().antMatchers(HttpMethod.POST).hasAuthority(ROLE_USER);
+        http.authorizeRequests().antMatchers(HttpMethod.PATCH).hasAuthority(ROLE_USER);
+        http.authorizeRequests().antMatchers(HttpMethod.PUT).hasAuthority(ROLE_USER);
+        http.authorizeRequests().antMatchers(HttpMethod.DELETE).hasAuthority(ROLE_USER);
         //-------------------------------------------
 
         //        http.authorizeRequests().antMatchers(HttpMethod.POST, "/user/lock").hasAuthority(RoleEnum.ROLE_ADMIN

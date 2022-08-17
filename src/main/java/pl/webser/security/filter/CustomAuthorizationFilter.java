@@ -32,6 +32,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             "/user/token/refresh",
             "/user/reset_password"};
 
+    private final String WEB_SOCKET_ROUTE = "/chat";
+
     private final JWTUtil jwtUtil;
 
     public CustomAuthorizationFilter(JWTUtil jwtUtil) {
@@ -45,7 +47,9 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
         String accessToken = request.getHeader(ACCESS_TOKEN_HEADER);
         String refreshToken = request.getHeader(REFRESH_TOKEN_HEADER);
-        if (stream(ROUTES_WITHOUT_AUTHORIZATION).anyMatch(element -> element.equals(request.getServletPath()))) {
+
+        if (stream(ROUTES_WITHOUT_AUTHORIZATION).anyMatch(element -> element.equals(request.getServletPath())) ||
+                request.getServletPath().contains(WEB_SOCKET_ROUTE)) {
             filterChain.doFilter(request, response);
         } else if (accessToken == null || refreshToken == null) {
             log.info("Token is missing");

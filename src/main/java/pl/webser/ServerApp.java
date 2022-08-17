@@ -12,6 +12,8 @@ import pl.webser.service.UserService;
 
 import javax.transaction.Transactional;
 
+import static pl.webser.security.SecurityConfig.*;
+
 @SpringBootApplication
 public class ServerApp {
     public static void main(String[] args) {
@@ -26,9 +28,9 @@ public class ServerApp {
             Role roleU = new Role();
             Role roleM = new Role();
             Role roleA = new Role();
-            roleU.setRoleName("ROLE_USER");
-            roleM.setRoleName("ROLE_MODERATOR");
-            roleA.setRoleName("ROLE_ADMIN");
+            roleU.setRoleName(ROLE_USER);
+            roleM.setRoleName(ROLE_MODERATOR);
+            roleA.setRoleName(ROLE_ADMIN);
             roleService.addRole(roleU);
             roleService.addRole(roleM);
             roleService.addRole(roleA);
@@ -36,14 +38,26 @@ public class ServerApp {
             User adminUser = new User();
             adminUser.setUsername("admin1");
             adminUser.setPassword("admin1");
-            adminUser.setEmailAddress("admin1");
+            adminUser.setEmailAddress("admin1@admin.ad");
             userService.savePassedUser(adminUser);
 
-            userService.addRoleToRegisteredUser("admin1", "ROLE_ADMIN");
-            userService.addRoleToRegisteredUser("admin1", "ROLE_MODERATOR");
+            userService.addRoleToRegisteredUser("admin1@admin.ad", ROLE_USER);
+            userService.addRoleToRegisteredUser("admin1@admin.ad", ROLE_MODERATOR);
+            userService.addRoleToRegisteredUser("admin1@admin.ad", ROLE_ADMIN);
+
+            postService.addPost("admin1@admin.ad", "Hello Everyone!");
 
 
-            postService.addPost("admin1", "Hello Everyone!");
+            User exampleUser = new User();
+            exampleUser.setUsername("example");
+            exampleUser.setPassword("example");
+            exampleUser.setEmailAddress("example@example.ex");
+            userService.savePassedUser(exampleUser);
+
+            userService.addRoleToRegisteredUser("example@example.ex", ROLE_USER);
+
+            postService.addPost("example@example.ex", "Example message.");
+
         };
     }
 }
