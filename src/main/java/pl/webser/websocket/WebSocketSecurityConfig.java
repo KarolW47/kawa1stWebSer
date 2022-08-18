@@ -13,4 +13,9 @@ public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBro
                 .simpDestMatchers("/chat")
                 .permitAll();
     }
+
+    @Override
+    protected boolean sameOriginDisabled() {
+        return true;
+    }
 }
