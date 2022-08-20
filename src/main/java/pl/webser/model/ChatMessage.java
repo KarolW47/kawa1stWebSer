@@ -35,13 +35,30 @@ public class ChatMessage {
     @Column(name = "email_of_receiver")
     private String emailOfReceiver;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Transient
     private String usernameOfSender;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Transient
     private String usernameOfReceiver;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Transient
     private Long idOfSender;
 
+    @Transient
+    private Long idOfReceiver;
+
+
+    @Override
+    public String toString() {
+        return "ChatMessage{" +
+                "id=" + id +
+                ", message='" + message + '\'' +
+                ", sentDate=" + sentDate +
+                ", emailOfSender='" + emailOfSender + '\'' +
+                ", emailOfReceiver='" + emailOfReceiver + '\'' +
+                ", usernameOfSender='" + usernameOfSender + '\'' +
+                ", usernameOfReceiver='" + usernameOfReceiver + '\'' +
+                ", idOfSender='" + idOfSender + '\'' +
+                '}';
+    }
 }
