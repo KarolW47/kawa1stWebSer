@@ -24,37 +24,35 @@ public class ChatMessageService {
         this.userService = userService;
     }
 
-    public ChatMessage addChatMessage(String message, Long idOfSender, String usernameOfReceiver) {
+    public ChatMessage addChatMessage(String message, Long idOfSender, Long idOfReceiver) {
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setMessage(message);
         chatMessage.setSentDate(new Date(System.currentTimeMillis()));
-        chatMessage.setEmailOfSender(userService.getUserById(idOfSender).map(User::getEmailAddress).orElse(null));
-        chatMessage.setEmailOfReceiver(userService.getUserByUsername(usernameOfReceiver).getEmailAddress());
+        chatMessage.setIdOfSender(idOfSender);
+        chatMessage.setIdOfReceiver(idOfReceiver);
         chatMessageRepository.save(chatMessage);
         return chatMessage;
     }
 
     public List<ChatMessage> getChatMessagesWithChosenUser(String emailOfUser,
                                                            String usernameOfChosenUserToChat) {
-        String usernameOfUser = userService.getUserByEmailAddress(emailOfUser).getUsername();
-        String emailOfChosenUserToChat = userService.getUserByUsername(usernameOfChosenUserToChat).getEmailAddress();
+        User currentUser = userService.getUserByEmailAddress(emailOfUser);
+        Long chosenUserId = userService.getUserByUsername(usernameOfChosenUserToChat).getId();
 
         List<ChatMessage> chatMessagesSentToChosenUser =
-                chatMessageRepository.findAllFromSenderToReceiverByEmail(emailOfUser,
-                        emailOfChosenUserToChat);
+                chatMessageRepository.findAllFromSenderToReceiverByUsersId(currentUser.getId(), chosenUserId);
         chatMessagesSentToChosenUser
                 .forEach(cm -> {
-                    cm.setUsernameOfSender(usernameOfUser);
+                    cm.setUsernameOfSender(currentUser.getUsername());
                     cm.setUsernameOfReceiver(usernameOfChosenUserToChat);
                 });
 
         List<ChatMessage> chatMessagesReceivedFromChosenUser =
-                chatMessageRepository.findAllFromSenderToReceiverByEmail(emailOfChosenUserToChat,
-                        emailOfUser);
+                chatMessageRepository.findAllFromSenderToReceiverByUsersId(chosenUserId, currentUser.getId());
         chatMessagesReceivedFromChosenUser
                 .forEach(cm -> {
                     cm.setUsernameOfSender(usernameOfChosenUserToChat);
-                    cm.setUsernameOfReceiver(usernameOfUser);
+                    cm.setUsernameOfReceiver(currentUser.getUsername());
                 });
 
         return Stream

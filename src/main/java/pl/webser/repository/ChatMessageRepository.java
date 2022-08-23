@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
 
-    @Query("SELECT m FROM ChatMessage m WHERE m.emailOfSender = ?1 AND m.emailOfReceiver = ?2")
-    List<ChatMessage> findAllFromSenderToReceiverByEmail(String emailOfSender, String emailOfReceiver);
+    @Query("SELECT m FROM ChatMessage m WHERE m.idOfSender = ?1 AND m.idOfReceiver = ?2")
+    List<ChatMessage> findAllFromSenderToReceiverByUsersId(Long idOfSender, Long idOfReceiver);
 
 }
