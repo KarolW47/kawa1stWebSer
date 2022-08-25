@@ -33,7 +33,7 @@ public class ChatMessageController {
                 jwtUtil.getEmailAddressFromJwtToken(token), username));
     }
 
-    @MessageMapping("/chat")
+    @MessageMapping("/chat/{chosenUserUsername}")
     @SendTo("/user/{chosenUserUsername}")
     public ChatMessage sendMessage(@DestinationVariable String chosenUserUsername, ChatMessage chatMessage) {
         log.info("Sending message to user with id {}, and saving to db.", chatMessage.getIdOfReceiver());

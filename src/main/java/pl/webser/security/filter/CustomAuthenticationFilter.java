@@ -7,6 +7,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import pl.webser.model.User;
@@ -87,6 +88,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
         String accessToken = jwtUtil.generateJwtToken(userFromDb.getEmailAddress(), roles);
         String refreshToken = jwtUtil.generateJwtRefreshToken(userFromDb.getEmailAddress());
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         response.setHeader(ACCESS_TOKEN_HEADER, accessToken);
         response.setHeader(REFRESH_TOKEN_HEADER, refreshToken);
         response.setHeader(USER_ID, String.valueOf(userFromDb.getId()));
