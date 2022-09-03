@@ -13,8 +13,11 @@ import pl.webser.service.ChatMessageService;
 
 import java.util.List;
 
-@Slf4j
+import static pl.webser.security.filter.CustomAuthorizationFilter.ACCESS_TOKEN_HEADER;
+
 @RestController
+@Slf4j
+@RequestMapping("/chat_messages")
 public class ChatMessageController {
 
     private final ChatMessageService chatMessageService;
@@ -26,16 +29,17 @@ public class ChatMessageController {
         this.jwtUtil = jwtUtil;
     }
 
-    @GetMapping("/chat_message/user")
-    public ResponseEntity<List<ChatMessage>> getHistoryOfConversation(@RequestParam String username,
-                                                                      @RequestHeader String token) {
-        return ResponseEntity.ok().body(chatMessageService.getChatMessagesWithChosenUser(
+    @GetMapping(path = "/user")
+    public ResponseEntity<List<ChatMessage>> getHistoryOfConversation(@RequestHeader(name = ACCESS_TOKEN_HEADER) String token,
+                                                                      @RequestParam(name = "username") String username) {
+        return ResponseEntity.ok(chatMessageService.getChatMessagesWithChosenUser(
                 jwtUtil.getEmailAddressFromJwtToken(token), username));
     }
 
-    @MessageMapping("/chat/{chosenUserUsername}")
-    @SendTo("/user/{chosenUserUsername}")
-    public ChatMessage sendMessage(@DestinationVariable String chosenUserUsername, ChatMessage chatMessage) {
+    @MessageMapping("/chat/{userId}/{chosenUserUsername}")
+    @SendTo("/user/{userId}/{chosenUserUsername}")
+    public ChatMessage sendMessage(@DestinationVariable String chosenUserUsername, @DestinationVariable Long userId,
+                                   ChatMessage chatMessage) {
         log.info("Sending message to user with id {}, and saving to db.", chatMessage.getIdOfReceiver());
         return chatMessageService.addChatMessage(chatMessage.getMessage(), chatMessage.getIdOfSender(),
                 chatMessage.getIdOfReceiver());

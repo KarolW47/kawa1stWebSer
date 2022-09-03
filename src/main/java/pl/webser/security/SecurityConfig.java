@@ -84,17 +84,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/register",
                 "/user/token/refresh",
                 "/user/reset_password", "/chat/**").permitAll();
-        http.authorizeRequests().antMatchers(HttpMethod.GET).hasAuthority(ROLE_USER);
-        http.authorizeRequests().antMatchers(HttpMethod.POST).hasAuthority(ROLE_USER);
-        http.authorizeRequests().antMatchers(HttpMethod.PATCH).hasAuthority(ROLE_USER);
-        http.authorizeRequests().antMatchers(HttpMethod.PUT).hasAuthority(ROLE_USER);
-        http.authorizeRequests().antMatchers(HttpMethod.DELETE).hasAuthority(ROLE_USER);
+        http.authorizeRequests().anyRequest().hasAuthority(ROLE_USER);
         //-------------------------------------------
-
-        //        http.authorizeRequests().antMatchers(HttpMethod.POST, "/user/lock").hasAuthority(RoleEnum.ROLE_ADMIN
-        //        .toString());
-
-        http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter());
         http.addFilterBefore(customAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
     }

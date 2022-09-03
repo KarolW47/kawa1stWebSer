@@ -1,5 +1,6 @@
 package pl.webser.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.webser.model.ChatMessage;
@@ -11,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
+@Slf4j
 @Service
 @Transactional
 public class ChatMessageService {
@@ -38,6 +40,8 @@ public class ChatMessageService {
                                                            String usernameOfChosenUserToChat) {
         User currentUser = userService.getUserByEmailAddress(emailOfUser);
         Long chosenUserId = userService.getUserByUsername(usernameOfChosenUserToChat).getId();
+
+        log.info("Fetching conversation between users with id {} and {}", currentUser.getId(), chosenUserId);
 
         List<ChatMessage> chatMessagesSentToChosenUser =
                 chatMessageRepository.findAllFromSenderToReceiverByUsersId(currentUser.getId(), chosenUserId);

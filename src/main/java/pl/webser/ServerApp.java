@@ -1,5 +1,6 @@
 package pl.webser;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,6 +14,7 @@ import pl.webser.service.UserService;
 import javax.transaction.Transactional;
 
 import static pl.webser.security.SecurityConfig.*;
+
 
 @SpringBootApplication
 public class ServerApp {
@@ -41,7 +43,6 @@ public class ServerApp {
             adminUser.setEmailAddress("admin1@admin.ad");
             userService.savePassedUser(adminUser);
 
-            userService.addRoleToRegisteredUser("admin1@admin.ad", ROLE_USER);
             userService.addRoleToRegisteredUser("admin1@admin.ad", ROLE_MODERATOR);
             userService.addRoleToRegisteredUser("admin1@admin.ad", ROLE_ADMIN);
 
@@ -53,8 +54,6 @@ public class ServerApp {
             exampleUser.setPassword("example");
             exampleUser.setEmailAddress("example@example.ex");
             userService.savePassedUser(exampleUser);
-
-            userService.addRoleToRegisteredUser("example@example.ex", ROLE_USER);
 
             postService.addPost("example@example.ex", "Example message.");
 
