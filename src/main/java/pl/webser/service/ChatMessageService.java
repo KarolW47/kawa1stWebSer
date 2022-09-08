@@ -26,12 +26,7 @@ public class ChatMessageService {
         this.userService = userService;
     }
 
-    public ChatMessage addChatMessage(String message, Long idOfSender, Long idOfReceiver) {
-        ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setMessage(message);
-        chatMessage.setSentDate(new Date(System.currentTimeMillis()));
-        chatMessage.setIdOfSender(idOfSender);
-        chatMessage.setIdOfReceiver(idOfReceiver);
+    public ChatMessage addChatMessage(ChatMessage chatMessage) {
         chatMessageRepository.save(chatMessage);
         return chatMessage;
     }

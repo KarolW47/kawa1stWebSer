@@ -18,6 +18,8 @@ import javax.transaction.Transactional;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import static pl.webser.security.SecurityConfig.ROLE_USER;
+
 @Service
 @Transactional
 @Slf4j
@@ -70,7 +72,7 @@ public class UserService implements UserDetailsService {
     public void savePassedUser(User user) {
         log.info("Saving new user with email: {} to database.", user.getEmailAddress());
         user.setPassword(encodePassword(user.getPassword()));
-        user.addUserRole(roleService.getRoleByRoleName("ROLE_USER"));
+        user.addUserRole(roleService.getRoleByRoleName(ROLE_USER));
         userRepository.save(user);
     }
 

@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import pl.webser.security.JWTUtil;
+import pl.webser.service.UserService;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -35,9 +36,11 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private final String WEB_SOCKET_ROUTE = "/chat";
 
     private final JWTUtil jwtUtil;
+    private final UserService userService;
 
-    public CustomAuthorizationFilter(JWTUtil jwtUtil) {
+    public CustomAuthorizationFilter(JWTUtil jwtUtil, UserService userService) {
         this.jwtUtil = jwtUtil;
+        this.userService = userService;
     }
 
     @Override
@@ -84,13 +87,14 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     }
 
     private void dealingWithValidAccessToken(String accessToken) {
-        String emailAddress = jwtUtil.getEmailAddressFromJwtToken(accessToken);
+        String username =
+                userService.getUserByEmailAddress(jwtUtil.getEmailAddressFromJwtToken(accessToken)).getUsername();
         String[] roles = jwtUtil.decodeJWT(accessToken).getClaim("roles").asArray(String.class);
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         stream(roles).forEach(role -> authorities.add(new SimpleGrantedAuthority(role)));
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                emailAddress, null, authorities);
+                username, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
 
