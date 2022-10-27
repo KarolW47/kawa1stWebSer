@@ -1,6 +1,5 @@
 package pl.webser.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.persistence.*;

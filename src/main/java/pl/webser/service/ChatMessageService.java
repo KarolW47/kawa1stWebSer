@@ -8,7 +8,6 @@ import pl.webser.model.User;
 import pl.webser.repository.ChatMessageRepository;
 
 import javax.transaction.Transactional;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
