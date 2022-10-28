@@ -44,6 +44,4 @@ buildNumber.properties
 hs_err_pid*
 
 #custom files
-
-
-
+/src/main/resources/application-prod.properties
