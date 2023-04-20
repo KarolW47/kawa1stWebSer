@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static pl.webser.security.filter.CustomAuthenticationFilter.USER_ID;
 import static pl.webser.security.filter.CustomAuthorizationFilter.ACCESS_TOKEN_HEADER;
 import static pl.webser.security.filter.CustomAuthorizationFilter.REFRESH_TOKEN_HEADER;
 
@@ -99,6 +100,7 @@ public class UserController {
 
                 response.setHeader(ACCESS_TOKEN_HEADER, jwtUtil.generateJwtToken(user.getEmailAddress(), roles));
                 response.setHeader(REFRESH_TOKEN_HEADER, jwtUtil.generateJwtRefreshToken(user.getEmailAddress()));
+                response.setHeader(USER_ID, String.valueOf(user.getId()));
                 log.info("Refreshing token for user with email: {}, done.", user.getEmailAddress());
             } catch (Exception exception) {
                 log.info("Error in refreshing token for user with email: {}, occurred.",

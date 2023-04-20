@@ -33,7 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
 
     @Value("${security.origin}")
-    public static String SECURITY_ORIGIN;
+    private String securityOrigin;
 
     private final JWTUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
@@ -95,7 +95,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
-        config.addAllowedOrigin(SECURITY_ORIGIN);
+        config.addAllowedOrigin(securityOrigin);
         config.setAllowCredentials(true);
         config.addAllowedHeader(ACCESS_TOKEN_HEADER);
         config.addAllowedHeader(REFRESH_TOKEN_HEADER);
