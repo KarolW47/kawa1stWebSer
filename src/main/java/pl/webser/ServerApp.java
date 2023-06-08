@@ -41,7 +41,7 @@ public class ServerApp {
                 adminUser.setUsername("admin1");
                 adminUser.setPassword("admin1");
                 adminUser.setEmailAddress("admin1@admin.ad");
-                userService.savePassedUser(adminUser);
+                userService.saveProvidedUser(adminUser);
 
                 userService.addRoleToRegisteredUser("admin1@admin.ad", ROLE_MODERATOR);
                 userService.addRoleToRegisteredUser("admin1@admin.ad", ROLE_ADMIN);
@@ -53,7 +53,7 @@ public class ServerApp {
                 exampleUser.setUsername("example");
                 exampleUser.setPassword("example");
                 exampleUser.setEmailAddress("example@example.ex");
-                userService.savePassedUser(exampleUser);
+                userService.saveProvidedUser(exampleUser);
 
                 postService.addPost("example@example.ex", "Example message.");
             }

@@ -75,7 +75,7 @@ public class UserController {
                     "Password does not fit into required pattern.");
         } else {
             log.info("Successfully added user with email: " + user.getEmailAddress() + " to DB.");
-            userService.savePassedUser(user);
+            userService.saveProvidedUser(user);
             return ResponseEntity.ok().build();
         }
     }
@@ -117,7 +117,7 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@RequestHeader(name = ACCESS_TOKEN_HEADER) String token,
                                         @RequestParam(name = "confirmationPassword") String confirmationPassword) {
         String emailAddress = jwtUtil.getEmailAddressFromJwtToken(token);
-        if (!userService.isUserPasswordEqualToStored(confirmationPassword, emailAddress)) {
+        if (!userService.isProvidedPasswordEqualToStored(confirmationPassword, emailAddress)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong present password.");
         } else {
             userService.deleteSpecificUser(emailAddress);
@@ -147,7 +147,7 @@ public class UserController {
         String passedConfirmationPassword = passwords[0];
         String passedNewPassword = passwords[1];
 
-        if (!userService.isUserPasswordEqualToStored(passedConfirmationPassword, emailAddress)) {
+        if (!userService.isProvidedPasswordEqualToStored(passedConfirmationPassword, emailAddress)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong present password.");
         } else if (!userService.isPasswordValid(passedNewPassword)) {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(

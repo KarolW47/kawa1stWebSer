@@ -56,8 +56,8 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username);
     }
 
-    public Optional<User> getUserById(Long id){
-        return userRepository.findById(id);
+    public Optional<User> getUserById(Long userId){
+        return userRepository.findById(userId);
     }
 
     public User getUserByEmailAddress(String emailAddress) {
@@ -69,7 +69,7 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
-    public void savePassedUser(User user) {
+    public void saveProvidedUser(User user) {
         log.info("Saving new user with email: {} to database.", user.getEmailAddress());
         user.setPassword(encodePassword(user.getPassword()));
         user.addUserRole(roleService.getRoleByRoleName(ROLE_USER));
@@ -118,7 +118,7 @@ public class UserService implements UserDetailsService {
         userRepository.updateUserWithNewRoleList(user, user.getId());
     }
 
-    public boolean isUserPasswordEqualToStored(String passedPassword, String emailAddress) {
+    public boolean isProvidedPasswordEqualToStored(String passedPassword, String emailAddress) {
         String passwordFromDb = userRepository.findByEmailAddress(emailAddress).getPassword();
         log.info("Checking if passed password is equal to actual password from DB for user with email: {}", emailAddress);
         return passwordEncoder().matches(passedPassword, passwordFromDb);

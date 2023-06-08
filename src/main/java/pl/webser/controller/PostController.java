@@ -1,6 +1,7 @@
 package pl.webser.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import pl.webser.service.PostService;
 import pl.webser.service.UserService;
 
 import java.net.URI;
+import java.util.Date;
 import java.util.List;
 
 import static pl.webser.security.filter.CustomAuthorizationFilter.ACCESS_TOKEN_HEADER;
@@ -44,14 +46,15 @@ public class PostController {
     }
 
     @GetMapping(path = "/posts")
-    public ResponseEntity<List<Post>> getAllPosts() {
-        return ResponseEntity.ok().body(postService.getPosts());
+    public ResponseEntity<List<Post>> getAllPosts(@RequestParam(name = "post_createDate") Date postCreateDate) {
+        return ResponseEntity.ok().body(postService.getTenPostsStartingFromCreateDate(postCreateDate));
     }
 
     @GetMapping(path = "/ofUser")
-    public ResponseEntity<List<Post>> getUserPosts (@RequestParam(name = "user_id") String userId) {
+    public ResponseEntity<List<Post>> getUserPosts(@RequestParam(name = "user_id") String userId, @RequestParam(name
+            = "post_createDate") Date postCreateDate) {
         Long id = Long.valueOf(userId);
-        return ResponseEntity.ok(postService.getUserPosts(id));
+        return ResponseEntity.ok(postService.getUserPosts(id, postCreateDate));
     }
 
     @DeleteMapping(path = "/delete")
